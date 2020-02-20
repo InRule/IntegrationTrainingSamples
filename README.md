@@ -1,2 +1,2 @@
 # IntegrationTrainingSamples
-Code samples references during the InRule Integration Training
+This solution contains a variety of code samples that are referenced during the InRule Integration Training.  For additional information, or to request supplimentary trainings, please contact roadservices@inrule.com.

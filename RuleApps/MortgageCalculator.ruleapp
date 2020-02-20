@@ -1,0 +1,1895 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleApplicationDef xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  Revision="-1"
+  PublicRevision="1"
+  Guid="edeb1c24-89fa-4bce-a1f9-0900de50407a"
+  Id="-1"
+  Name="MortgageCalculator"
+  RepositoryAssemblyFileVersion="5.4.0.191"
+  AuthoringIsExpanded="false"
+  LastValidateContentCode="-1789544903"
+  IsolatedTestDomain="false"
+  SchemaGuid="e3a90d33-1ff2-4e0a-816e-72795048cff9"
+  SchemaRevision="1"
+  SchemaPublicRevision="1"
+  LastValidateDateTimeUtc="2019-09-10T17:44:05.7989464Z">
+  <Comments xmlns="http://www.inrule.com/XmlSchema/Schema">This rule application is the second version of the Mortgage Calculation, now contains a while loop to build out a mortgage payment schedule.
+
+ex 12 rule app</Comments>
+  <UpgraderMessageList xmlns="http://www.inrule.com/XmlSchema/Schema" />
+  <RuntimeEngine xmlns="http://www.inrule.com/XmlSchema/Schema">InRule</RuntimeEngine>
+  <FeatureVersion xmlns="http://www.inrule.com/XmlSchema/Schema">106</FeatureVersion>
+  <CompatibilityVersion xmlns="http://www.inrule.com/XmlSchema/Schema">1</CompatibilityVersion>
+  <AuthoringSettings xmlns="http://www.inrule.com/XmlSchema/Schema">
+    <SelectedAuthoringItemGuid>edeb1c24-89fa-4bce-a1f9-0900de50407a</SelectedAuthoringItemGuid>
+    <UseAdvancedXmlOptions>false</UseAdvancedXmlOptions>
+    <AllowAccessToParentsInLanguageRules>true</AllowAccessToParentsInLanguageRules>
+    <TreeRuleNameVisibility>HideReserved</TreeRuleNameVisibility>
+    <CreatedDateTime>2007-05-21T10:09:29.3125614-05:00</CreatedDateTime>
+    <ModifiedDateTime>2019-09-10T12:44:05.8089453-05:00</ModifiedDateTime>
+    <TargetPlatform>InRule</TargetPlatform>
+  </AuthoringSettings>
+  <IndentUnboundCollectionXml xmlns="http://www.inrule.com/XmlSchema/Schema">false</IndentUnboundCollectionXml>
+  <AllowRuleInactivation xmlns="http://www.inrule.com/XmlSchema/Schema">true</AllowRuleInactivation>
+  <UseRuleVersions xmlns="http://www.inrule.com/XmlSchema/Schema">false</UseRuleVersions>
+  <UseVersionCreationDates xmlns="http://www.inrule.com/XmlSchema/Schema">true</UseVersionCreationDates>
+  <HasContextVersionSettings xmlns="http://www.inrule.com/XmlSchema/Schema">false</HasContextVersionSettings>
+  <RunawayCycleCount xmlns="http://www.inrule.com/XmlSchema/Schema">100000</RunawayCycleCount>
+  <Timeout xmlns="http://www.inrule.com/XmlSchema/Schema">30000</Timeout>
+  <RuntimeErrorHandlingPolicy xmlns="http://www.inrule.com/XmlSchema/Schema">ContinueWithNextRule</RuntimeErrorHandlingPolicy>
+  <Entities xmlns="http://www.inrule.com/XmlSchema/Schema">
+    <EntityDef
+      Revision="1"
+      PublicRevision="1"
+      Guid="64cd6460-5fe4-42ee-96af-808f6d1d4984"
+      Name="Mortgage">
+      <RuleElements>
+        <RuleElementDef
+          xsi:type="RuleSetDef"
+          Revision="1"
+          PublicRevision="1"
+          Guid="09029368-b258-4333-a9b9-c86af07881f9"
+          Name="PaymentSummaryRuleController">
+          <FireMode>Explicit</FireMode>
+          <RunMode>SequentialRunOnce</RunMode>
+          <Rules>
+            <RuleElementDef
+              xsi:type="LanguageRuleDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="0db261ca-865c-40e7-ae1a-c41934795236"
+              Name="SetDefaults">
+              <Attributes>
+                <anyType
+                  xsi:type="CollectionItem">
+                  <Key>
+                    <Name>ReservedAttributeTokenKey</Name>
+                    <Guid>60fae55a-9a45-41a5-828a-bc71a3b65013</Guid>
+                  </Key>
+                  <Collection>
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0"
+                      Value="ActionSetDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.0"
+                      Value="ActionSetDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.0"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1"
+                      Value="ConditionGroupTemplateSingleCondition" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1.0"
+                      Value="IsNullOrEmptyField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1.0.0"
+                      Value="MortgageCalculator.LoanInfo.Principal.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1.0.0.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1.0.0.1"
+                      Value="MortgageCalculator.LoanInfo.Principal.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1.0.1"
+                      Value="IsNullOrEmptyField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0.1"
+                      Value="MortgageCalculator.LoanInfo.Principal.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0.1.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0.1.1"
+                      Value="MortgageCalculator.LoanInfo.Principal.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0.3"
+                      Value="IntegerDesigner" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.0"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1"
+                      Value="ConditionGroupTemplateSingleCondition" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.0"
+                      Value="IsNullOrEmptyField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.0.0"
+                      Value="MortgageCalculator.LoanInfo.APR.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.0.0.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.0.0.1"
+                      Value="MortgageCalculator.LoanInfo.APR.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.0.1"
+                      Value="IsNullOrEmptyField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.2"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.1"
+                      Value="MortgageCalculator.LoanInfo.APR.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.1.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.1.1"
+                      Value="MortgageCalculator.LoanInfo.APR.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.3"
+                      Value="IntegerDesigner" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.0"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1"
+                      Value="ConditionGroupTemplateSingleCondition" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1.0"
+                      Value="IsNullOrEmptyField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1.0.0"
+                      Value="MortgageCalculator.LoanInfo.TermInYears.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1.0.0.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1.0.0.1"
+                      Value="MortgageCalculator.LoanInfo.TermInYears.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1.0.1"
+                      Value="IsNullOrEmptyField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.2"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3.0"
+                      Value="SetValueIntegerAssignableInteger" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3.0.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3.0.1"
+                      Value="MortgageCalculator.LoanInfo.TermInYears.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3.0.1.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3.0.1.1"
+                      Value="MortgageCalculator.LoanInfo.TermInYears.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3.0.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3.0.3"
+                      Value="IntegerDesigner" />
+                  </Collection>
+                </anyType>
+              </Attributes>
+              <RuleElement
+                xsi:type="SimpleRuleDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="4436e60e-bd00-4575-bb77-90901d5ab13d"
+                Name="SetDefaults">
+                <Condition>
+                  <ReturnType>Boolean</ReturnType>
+                  <FormulaText>true</FormulaText>
+                </Condition>
+                <SubRules>
+                  <RuleElementDef
+                    xsi:type="SimpleRuleDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="2368df10-0988-4aa1-b289-76f7eea146da"
+                    Name="Rule1">
+                    <Condition>
+                      <ReturnType>Boolean</ReturnType>
+                      <FormulaText>IsNullOrEmpty(LoanInfo.Principal)</FormulaText>
+                    </Condition>
+                    <SubRules>
+                      <RuleElementDef
+                        xsi:type="SetValueActionDef"
+                        Revision="1"
+                        PublicRevision="1"
+                        Guid="c3022400-9acb-41c5-ba9f-67dfdcdde5bc"
+                        Name="SetValue1">
+                        <Element>
+                          <FormulaText>LoanInfo.Principal</FormulaText>
+                        </Element>
+                        <Value>
+                          <FormulaText>400000</FormulaText>
+                        </Value>
+                      </RuleElementDef>
+                    </SubRules>
+                    <HasContextVersionSettings>false</HasContextVersionSettings>
+                  </RuleElementDef>
+                  <RuleElementDef
+                    xsi:type="SimpleRuleDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="8f050ffb-1ca4-445e-8163-e02df6f8bae1"
+                    Name="Rule2">
+                    <Condition>
+                      <ReturnType>Boolean</ReturnType>
+                      <FormulaText>IsNullOrEmpty(LoanInfo.APR)</FormulaText>
+                    </Condition>
+                    <SubRules>
+                      <RuleElementDef
+                        xsi:type="SetValueActionDef"
+                        Revision="1"
+                        PublicRevision="1"
+                        Guid="5da3bcd1-658e-410d-81d7-f4fdfdf6ed57"
+                        Name="Set_Value1">
+                        <Element>
+                          <FormulaText>LoanInfo.APR</FormulaText>
+                        </Element>
+                        <Value>
+                          <FormulaText>3.9</FormulaText>
+                        </Value>
+                      </RuleElementDef>
+                    </SubRules>
+                    <HasContextVersionSettings>false</HasContextVersionSettings>
+                  </RuleElementDef>
+                  <RuleElementDef
+                    xsi:type="SimpleRuleDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="534e9ba5-ec44-4bbc-9e0a-8df84895b805"
+                    Name="Rule3">
+                    <Condition>
+                      <ReturnType>Boolean</ReturnType>
+                      <FormulaText>IsNullOrEmpty(LoanInfo.TermInYears)</FormulaText>
+                    </Condition>
+                    <SubRules>
+                      <RuleElementDef
+                        xsi:type="SetValueActionDef"
+                        Revision="1"
+                        PublicRevision="1"
+                        Guid="216c9b79-4797-4d40-9cc0-54564100dd8b"
+                        Name="Set_Value2">
+                        <Element>
+                          <FormulaText>LoanInfo.TermInYears</FormulaText>
+                        </Element>
+                        <Value>
+                          <FormulaText>30</FormulaText>
+                        </Value>
+                      </RuleElementDef>
+                    </SubRules>
+                    <HasContextVersionSettings>false</HasContextVersionSettings>
+                  </RuleElementDef>
+                </SubRules>
+                <HasContextVersionSettings>false</HasContextVersionSettings>
+              </RuleElement>
+              <HasContextVersionSettings>false</HasContextVersionSettings>
+            </RuleElementDef>
+            <RuleElementDef
+              xsi:type="DeclareVariableActionDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="4323d626-39a3-4e16-a8d2-5ba75c09abe1"
+              Name="monthlyRate"
+              DataType="Number" />
+            <RuleElementDef
+              xsi:type="LanguageRuleDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="c2fc50fd-2523-4682-8976-b75402965480"
+              Name="CalculatePaymentSummary">
+              <Attributes>
+                <anyType
+                  xsi:type="CollectionItem">
+                  <Key>
+                    <Name>ReservedAttributeTokenKey</Name>
+                    <Guid>60fae55a-9a45-41a5-828a-bc71a3b65013</Guid>
+                  </Key>
+                  <Collection>
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0"
+                      Value="ActionSetDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.0"
+                      Value="ActionSetDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1.0"
+                      Value="MortgageCalculator.Mortgage.PaymentSummary.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1.1"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.0"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.1"
+                      Value="MortgageCalculator.LoanInfo.Principal.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.1.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.1.1"
+                      Value="MortgageCalculator.LoanInfo.Principal.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.2"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.3"
+                      Value="MortgageCalculator.LoanInfo.APR.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.3.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.3.1"
+                      Value="MortgageCalculator.LoanInfo.APR.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.4"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.ExpressionTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.5"
+                      Value="MortgageCalculator.LoanInfo.TermInMonths.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.5.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.3.5.1"
+                      Value="MortgageCalculator.LoanInfo.TermInMonths.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1"
+                      Value="MortgageCalculator.PaymentSummary.TotalCost.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.0"
+                      Value="MortgageCalculator.Mortgage.PaymentSummary.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.1"
+                      Value="MortgageCalculator.PaymentSummary.TotalCost.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3"
+                      Value="MultiplyDecimal" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.0"
+                      Value="MortgageCalculator.Mortgage.PaymentSummary.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.0.1"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.1"
+                      Value="MultiplyDecimal" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.2"
+                      Value="MortgageCalculator.LoanInfo.TermInMonths.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.2.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3.2.1"
+                      Value="MortgageCalculator.LoanInfo.TermInMonths.Explicit" />
+                  </Collection>
+                </anyType>
+              </Attributes>
+              <RuleElement
+                xsi:type="SimpleRuleDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="7700c8eb-1883-4a7b-8212-d573aaf7423f"
+                Name="CalculatePaymentSummary">
+                <Condition>
+                  <ReturnType>Boolean</ReturnType>
+                  <FormulaText>true</FormulaText>
+                </Condition>
+                <SubRules>
+                  <RuleElementDef
+                    xsi:type="SetValueActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="dea45057-6a1a-42e3-b1b8-41d0287518ce"
+                    Name="SetValue1">
+                    <Element>
+                      <FormulaText>PaymentSummary.MonthlyPayment</FormulaText>
+                    </Element>
+                    <Value>
+                      <FormulaText>calculate_monthly_payment(Principal:LoanInfo.Principal, APR:LoanInfo.APR, TermInMonths:LoanInfo.TermInMonths)</FormulaText>
+                    </Value>
+                  </RuleElementDef>
+                  <RuleElementDef
+                    xsi:type="SetValueActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="4f7e27b2-ac35-452e-8214-db36d99804f4"
+                    Name="SetValue2">
+                    <Element>
+                      <FormulaText>PaymentSummary.TotalCost</FormulaText>
+                    </Element>
+                    <Value>
+                      <FormulaText>PaymentSummary.MonthlyPayment * LoanInfo.TermInMonths</FormulaText>
+                    </Value>
+                  </RuleElementDef>
+                </SubRules>
+                <HasContextVersionSettings>false</HasContextVersionSettings>
+              </RuleElement>
+              <HasContextVersionSettings>false</HasContextVersionSettings>
+            </RuleElementDef>
+            <RuleElementDef
+              xsi:type="ExecuteActionDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="6d1897d7-acbb-42ad-969e-d18dfd553cff"
+              Name="ExecuteRuleSet1">
+              <Target>
+                <FormulaText>CalculatePaymentSchedule</FormulaText>
+              </Target>
+              <ParameterValues />
+            </RuleElementDef>
+          </Rules>
+          <HasContextVersionSettings>false</HasContextVersionSettings>
+        </RuleElementDef>
+        <RuleElementDef
+          xsi:type="RuleSetDef"
+          Revision="1"
+          PublicRevision="1"
+          Guid="673616db-0705-4d37-8993-46ebe6f01f8a"
+          Name="CalculatePaymentSchedule">
+          <FireMode>Explicit</FireMode>
+          <RunMode>SequentialRunOnce</RunMode>
+          <Rules>
+            <RuleElementDef
+              xsi:type="DeclareVariableActionDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="67088934-d8e4-4545-bb00-83b7606239d3"
+              Name="paymentCount"
+              AuthoringIsExpanded="false"
+              DataType="Integer">
+              <DefaultValue>1</DefaultValue>
+            </RuleElementDef>
+            <RuleElementDef
+              xsi:type="DeclareVariableActionDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="cfdb0f1b-7b41-4f42-a8b0-52c22704f753"
+              Name="remainingBalance"
+              AuthoringIsExpanded="false"
+              DataType="Number" />
+            <RuleElementDef
+              xsi:type="ClearCollectionActionDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="cac9a595-a11d-45ed-80bc-27998b36c07d"
+              Name="ClearPaymentSchedule"
+              AuthoringIsExpanded="false">
+              <Collection
+                LastAuthoringView="Syntax">
+                <FormulaText>Payments</FormulaText>
+              </Collection>
+            </RuleElementDef>
+            <RuleElementDef
+              xsi:type="LanguageRuleDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="b320a8f3-c87e-4ebb-99d1-0bbb7caa8c68"
+              Name="CreatePayments">
+              <Attributes>
+                <anyType
+                  xsi:type="CollectionItem">
+                  <Key>
+                    <Name>ReservedAttributeTokenKey</Name>
+                    <Guid>60fae55a-9a45-41a5-828a-bc71a3b65013</Guid>
+                  </Key>
+                  <Collection>
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.0"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1"
+                      Value="ConditionGroupTemplateSingleCondition" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0"
+                      Value="IsValidField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1"
+                      Value="IsValidField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.2"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.1"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.remainingBalance.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.3"
+                      Value="MortgageCalculator.PaymentSummary.TotalCost.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.3.0"
+                      Value="MortgageCalculator.Mortgage.PaymentSummary.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.3.1"
+                      Value="MortgageCalculator.PaymentSummary.TotalCost.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1"
+                      Value="WhileDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.0"
+                      Value="WhileDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.1"
+                      Value="ConditionGroupTemplateSingleCondition" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.1.0"
+                      Value="CompareNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.1.0.0"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.paymentCount.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.1.0.1"
+                      Value="Comparison_lte" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.1.0.2"
+                      Value="MortgageCalculator.LoanInfo.TermInMonths.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.1.0.2.0"
+                      Value="MortgageCalculator.Mortgage.LoanInfo.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.1.0.2.1"
+                      Value="MortgageCalculator.LoanInfo.TermInMonths.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.2"
+                      Value="WhileDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.1"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.remainingBalance.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.3"
+                      Value="MinusDecimal" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.3.0"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.remainingBalance.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.3.1"
+                      Value="MinusDecimal" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.3.2"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.3.2.0"
+                      Value="MortgageCalculator.Mortgage.PaymentSummary.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.0.3.2.1"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.1"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.1.0"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.1.1"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.paymentCount.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.1.2"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.1.3"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.remainingBalance.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.1.4"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef1MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef10" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.1.5"
+                      Value="MortgageCalculator.Mortgage.VocabularyDef1.AddCollectionMemberTemplateDef1.PaymentMethod.ValueListValuePaymentMethodValueList" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2"
+                      Value="SetValueIntegerAssignableInteger" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2.1"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.paymentCount.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2.3"
+                      Value="PlusDecimal" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2.3.0"
+                      Value="MortgageCalculator.Mortgage.RuleSets.CalculatePaymentSchedule._nullVocabSurrogate.paymentCount.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2.3.1"
+                      Value="PlusDecimal" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.1.3.2.3.2"
+                      Value="IntegerDesigner" />
+                  </Collection>
+                </anyType>
+              </Attributes>
+              <RuleElement
+                xsi:type="SimpleRuleDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="4497eec0-38f3-46d2-8d86-da964bca5586"
+                Name="CreatePayments">
+                <Condition
+                  LastAuthoringView="BusinessLangauge">
+                  <ReturnType>Boolean</ReturnType>
+                  <FormulaText>Not(IsInvalid(LoanInfo))</FormulaText>
+                </Condition>
+                <SubRules>
+                  <RuleElementDef
+                    xsi:type="SetValueActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="7e0aa6e5-64f1-4264-99a7-128b03cbc1b2"
+                    Name="SetValue6"
+                    AuthoringIsExpanded="false">
+                    <Element
+                      LastAuthoringView="Syntax">
+                      <FormulaText>remainingBalance</FormulaText>
+                    </Element>
+                    <Value
+                      LastAuthoringView="Syntax">
+                      <FormulaText>PaymentSummary.TotalCost</FormulaText>
+                    </Value>
+                  </RuleElementDef>
+                  <RuleElementDef
+                    xsi:type="WhileRuleDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="1fc82849-ac4c-494a-b64d-f2c08b91fb19"
+                    Name="While1">
+                    <Condition
+                      LastAuthoringView="Syntax">
+                      <ReturnType>Boolean</ReturnType>
+                      <FormulaText>paymentCount &lt;= LoanInfo.TermInMonths</FormulaText>
+                    </Condition>
+                    <SubRules>
+                      <RuleElementDef
+                        xsi:type="SetValueActionDef"
+                        Revision="1"
+                        PublicRevision="1"
+                        Guid="be340ad1-b7ac-470a-9eb8-b3ffbf7aa15a"
+                        Name="SetValue2"
+                        AuthoringIsExpanded="false">
+                        <Element
+                          LastAuthoringView="Syntax">
+                          <FormulaText>remainingBalance</FormulaText>
+                        </Element>
+                        <Value
+                          LastAuthoringView="Syntax">
+                          <FormulaText>remainingBalance - PaymentSummary.MonthlyPayment</FormulaText>
+                        </Value>
+                      </RuleElementDef>
+                      <RuleElementDef
+                        xsi:type="TemplateValueDef"
+                        Revision="1"
+                        PublicRevision="1"
+                        Guid="5892799f-8119-49ef-968e-8b248eaac041"
+                        Name="TemplateValueDef1">
+                        <PlaceholderValues>
+                          <Dictionary>
+                            <KeyValuePair>
+                              <Key>
+                                <string xmlns="">PaymentCount</string>
+                              </Key>
+                              <Value>
+                                <string xmlns="">paymentCount</string>
+                              </Value>
+                            </KeyValuePair>
+                            <KeyValuePair>
+                              <Key>
+                                <string xmlns="">RemainingBalance</string>
+                              </Key>
+                              <Value>
+                                <string xmlns="">remainingBalance</string>
+                              </Value>
+                            </KeyValuePair>
+                            <KeyValuePair>
+                              <Key>
+                                <string xmlns="">PaymentMethod</string>
+                              </Key>
+                              <Value>
+                                <string xmlns="">"Check"</string>
+                              </Value>
+                            </KeyValuePair>
+                          </Dictionary>
+                        </PlaceholderValues>
+                        <SourceTemplateGuid>e2068398-9e73-4df1-b029-705639a1f2d8</SourceTemplateGuid>
+                        <CompiledTypeName>InRule.Repository.RuleElements.AddCollectionMemberActionDef, InRule.Repository</CompiledTypeName>
+                      </RuleElementDef>
+                      <RuleElementDef
+                        xsi:type="SetValueActionDef"
+                        Revision="1"
+                        PublicRevision="1"
+                        Guid="8a8209c0-0b14-4ec9-9e92-723b8972d294"
+                        Name="SetValue5"
+                        AuthoringIsExpanded="false">
+                        <Element
+                          LastAuthoringView="Syntax">
+                          <FormulaText>paymentCount</FormulaText>
+                        </Element>
+                        <Value
+                          LastAuthoringView="Syntax">
+                          <FormulaText>paymentCount + 1</FormulaText>
+                        </Value>
+                      </RuleElementDef>
+                    </SubRules>
+                    <HasContextVersionSettings>false</HasContextVersionSettings>
+                  </RuleElementDef>
+                </SubRules>
+                <HasContextVersionSettings>false</HasContextVersionSettings>
+              </RuleElement>
+              <HasContextVersionSettings>false</HasContextVersionSettings>
+            </RuleElementDef>
+          </Rules>
+          <HasContextVersionSettings>false</HasContextVersionSettings>
+        </RuleElementDef>
+        <RuleElementDef
+          xsi:type="RuleSetDef"
+          Revision="1"
+          PublicRevision="1"
+          Guid="a9040cc3-e2ea-485e-8308-05aeea73277f"
+          Name="InvalidLoanInfoActions">
+          <FireMode>Explicit</FireMode>
+          <RunMode>SequentialRunOnce</RunMode>
+          <Rules>
+            <RuleElementDef
+              xsi:type="LanguageRuleDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="6cc6da4f-dc55-4e9b-8e7a-a3e9faf42832"
+              Name="InvalidLoanInfoRule">
+              <Attributes>
+                <anyType
+                  xsi:type="CollectionItem">
+                  <Key>
+                    <Name>ReservedAttributeTokenKey</Name>
+                    <Guid>60fae55a-9a45-41a5-828a-bc71a3b65013</Guid>
+                  </Key>
+                  <Collection>
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0"
+                      Value="ActionSetDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.0"
+                      Value="ActionSetDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0"
+                      Value="ClearCollectionDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.0"
+                      Value="ClearCollectionDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.1"
+                      Value="MortgageCalculator.Mortgage.Payments.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.0"
+                      Value="MortgageCalculator.Mortgage.PaymentSummary.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.1.1"
+                      Value="MortgageCalculator.PaymentSummary.MonthlyPayment.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.1.3"
+                      Value="IntegerDesigner" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2"
+                      Value="SetValueNumberAssignableNumber" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.0"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1"
+                      Value="MortgageCalculator.PaymentSummary.TotalCost.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1.0"
+                      Value="MortgageCalculator.Mortgage.PaymentSummary.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.1.1"
+                      Value="MortgageCalculator.PaymentSummary.TotalCost.Explicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.2"
+                      Value="SetValueBooleanAssignableBoolean" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.2.3"
+                      Value="IntegerDesigner" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.3"
+                      Value="FireNotificationActionDesigner" />
+                  </Collection>
+                </anyType>
+              </Attributes>
+              <RuleElement
+                xsi:type="SimpleRuleDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="8dd2fa49-109b-47d1-b80f-5d9a6cc2cfe7"
+                Name="InvalidLoanInfoRule">
+                <Condition>
+                  <ReturnType>Boolean</ReturnType>
+                  <FormulaText>true</FormulaText>
+                </Condition>
+                <SubRules>
+                  <RuleElementDef
+                    xsi:type="ClearCollectionActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="c34a4512-a207-4b85-8dca-c1296119ca1a"
+                    Name="ClearCollection1">
+                    <Collection>
+                      <FormulaText>Payments</FormulaText>
+                    </Collection>
+                  </RuleElementDef>
+                  <RuleElementDef
+                    xsi:type="SetValueActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="3479f091-5052-4aa1-a739-91c8838568de"
+                    Name="SetValue2">
+                    <Element>
+                      <FormulaText>PaymentSummary.MonthlyPayment</FormulaText>
+                    </Element>
+                    <Value>
+                      <FormulaText>0</FormulaText>
+                    </Value>
+                  </RuleElementDef>
+                  <RuleElementDef
+                    xsi:type="SetValueActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="f6c3bc51-0201-40a0-af49-c42bf76ca19c"
+                    Name="SetValue3">
+                    <Element>
+                      <FormulaText>PaymentSummary.TotalCost</FormulaText>
+                    </Element>
+                    <Value>
+                      <FormulaText>0</FormulaText>
+                    </Value>
+                  </RuleElementDef>
+                  <RuleElementDef
+                    xsi:type="FireNotificationActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="8df57dbf-193c-4d2e-87c5-7c56dc5b212a"
+                    Name="FireInvalidNotification">
+                    <NotificationType>Informational</NotificationType>
+                    <NotificationMessage>
+                      <FormulaParseFormat>Token</FormulaParseFormat>
+                      <FormulaText>"Loan Info contains invalid information."</FormulaText>
+                    </NotificationMessage>
+                  </RuleElementDef>
+                </SubRules>
+                <HasContextVersionSettings>false</HasContextVersionSettings>
+              </RuleElement>
+              <HasContextVersionSettings>false</HasContextVersionSettings>
+            </RuleElementDef>
+          </Rules>
+          <HasContextVersionSettings>false</HasContextVersionSettings>
+        </RuleElementDef>
+        <RuleElementDef
+          xsi:type="RuleFlowDef"
+          Revision="1"
+          PublicRevision="1"
+          Guid="06dcce11-a9e0-4c00-959a-1f50b5890d90"
+          Name="LoanProcessingRuleFlow">
+          <FireMode>Explicit</FireMode>
+          <RunMode>SequentialRunOnce</RunMode>
+          <Rules>
+            <RuleElementDef
+              xsi:type="ExecuteActionDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="513fb559-6897-42a9-a27c-46ce3c917e56"
+              Name="ExecuteRuleSet1">
+              <Target>
+                <FormulaText>LoanInfo.LoanValidationRules</FormulaText>
+              </Target>
+              <ParameterValues />
+            </RuleElementDef>
+            <RuleElementDef
+              xsi:type="ExclusiveRuleDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="db739623-d850-4d4a-bce0-00b638a92967"
+              Name="IsLoanInfoValid">
+              <DefaultSubRulesRoot
+                Guid="88870fa3-0582-4e12-9be2-2d57b5861f66"
+                Name="Otherwise" />
+              <Conditions>
+                <SimpleRuleDef
+                  Revision="1"
+                  PublicRevision="1"
+                  Guid="e5589d76-09c4-4eba-9445-5b1c5a33f160"
+                  Name="Rule1">
+                  <Condition
+                    LastAuthoringView="BusinessLangauge">
+                    <ReturnType>Boolean</ReturnType>
+                    <FormulaText>Not(IsInvalid(LoanInfo))</FormulaText>
+                  </Condition>
+                  <SubRules>
+                    <RuleElementDef
+                      xsi:type="ExecuteActionDef"
+                      Revision="1"
+                      PublicRevision="1"
+                      Guid="09faafaf-a0a8-470c-9539-8a4f878048c3"
+                      Name="ExecuteRuleSet1">
+                      <Target>
+                        <FormulaText>PaymentSummaryRuleController</FormulaText>
+                      </Target>
+                      <ParameterValues />
+                    </RuleElementDef>
+                    <RuleElementDef
+                      xsi:type="ExecuteActionDef"
+                      Revision="1"
+                      PublicRevision="1"
+                      Guid="0010338b-b787-422c-bb4d-e0c207a4d2e5"
+                      Name="ExecuteRuleSet2">
+                      <Target>
+                        <FormulaText>CalculatePaymentSchedule</FormulaText>
+                      </Target>
+                      <ParameterValues />
+                    </RuleElementDef>
+                  </SubRules>
+                  <HasContextVersionSettings>false</HasContextVersionSettings>
+                </SimpleRuleDef>
+              </Conditions>
+              <DefaultSubRules>
+                <RuleElementDef
+                  xsi:type="ExecuteActionDef"
+                  Revision="1"
+                  PublicRevision="1"
+                  Guid="e05bb015-3f3b-435f-8b69-7454a59d4c7d"
+                  Name="ExecuteRuleSet1">
+                  <Target>
+                    <FormulaText>InvalidLoanInfoActions</FormulaText>
+                  </Target>
+                  <ParameterValues />
+                </RuleElementDef>
+              </DefaultSubRules>
+              <HasContextVersionSettings>false</HasContextVersionSettings>
+            </RuleElementDef>
+          </Rules>
+          <HasContextVersionSettings>false</HasContextVersionSettings>
+          <DesignerLayout>
+            <ItemLayouts>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>9faf920e-085a-44a7-9c5d-5998cc457e1a</ID>
+                <Left>247</Left>
+                <Top>13</Top>
+                <ZIndex>0</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>7cb2ffcc-901b-4e62-8cc0-e433ebdf9f40</ContentKey>
+                <ShapeType>Start</ShapeType>
+                <TextSource>Value</TextSource>
+              </DesignerItemLayout>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>b85d4bf6-fff1-42ee-92d2-71b1ef9776ea</ID>
+                <Left>251</Left>
+                <Top>485</Top>
+                <ZIndex>1</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>a370b937-f6d5-4e65-a7a1-86d2c14196c2</ContentKey>
+                <ShapeType>End</ShapeType>
+                <TextSource>Value</TextSource>
+              </DesignerItemLayout>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>afc4f598-52ae-42eb-a382-81283b96e12a</ID>
+                <Left>168</Left>
+                <Top>99</Top>
+                <ZIndex>3</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>513fb559-6897-42a9-a27c-46ce3c917e56</ContentKey>
+                <ShapeType>RuleSet</ShapeType>
+                <TextSource>Value</TextSource>
+              </DesignerItemLayout>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>4f589170-2f50-4b7b-8b54-41b3e6a7f3d5</ID>
+                <Left>228</Left>
+                <Top>186</Top>
+                <ZIndex>4</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>db739623-d850-4d4a-bce0-00b638a92967</ContentKey>
+                <ShapeType>Condition</ShapeType>
+                <TextSource>Name</TextSource>
+              </DesignerItemLayout>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>9638ba07-20f5-4d6b-8f02-eba4e39452f3</ID>
+                <Left>22</Left>
+                <Top>247</Top>
+                <ZIndex>6</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>09faafaf-a0a8-470c-9539-8a4f878048c3</ContentKey>
+                <ShapeType>RuleSet</ShapeType>
+                <TextSource>Value</TextSource>
+              </DesignerItemLayout>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>921b6b7f-77f5-4ca1-97ef-a28bf812f71b</ID>
+                <Left>13</Left>
+                <Top>337</Top>
+                <ZIndex>7</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>0010338b-b787-422c-bb4d-e0c207a4d2e5</ContentKey>
+                <ShapeType>RuleSet</ShapeType>
+                <TextSource>Value</TextSource>
+              </DesignerItemLayout>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>0058acbf-e636-4cdb-87e0-770b93373ba6</ID>
+                <Left>342</Left>
+                <Top>246</Top>
+                <ZIndex>8</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>e05bb015-3f3b-435f-8b69-7454a59d4c7d</ContentKey>
+                <ShapeType>RuleSet</ShapeType>
+                <TextSource>Value</TextSource>
+              </DesignerItemLayout>
+              <DesignerItemLayout
+                xsi:type="RuleFlowDesignerItemLayout">
+                <ID>e35d4d3b-cfff-41bf-ab6c-8fcabba14e15</ID>
+                <Left>271</Left>
+                <Top>423</Top>
+                <ZIndex>12</ZIndex>
+                <FontSize>12</FontSize>
+                <ContentKey>02585d89-2aa6-4ae3-ae3c-4209f8b15874</ContentKey>
+                <ConvergenceKey>db739623-d850-4d4a-bce0-00b638a92967</ConvergenceKey>
+                <ShapeType>Convergence</ShapeType>
+                <TextSource>Value</TextSource>
+              </DesignerItemLayout>
+            </ItemLayouts>
+            <ZoomLevel>1</ZoomLevel>
+          </DesignerLayout>
+        </RuleElementDef>
+      </RuleElements>
+      <Fields>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="db323a8c-1365-498d-a058-2d10064956ee"
+          Name="LoanInfo"
+          DataType="Entity"
+          DataTypeEntityName="LoanInfo"
+          DisplayName="Loan Info">
+          <DefaultValue />
+        </FieldDef>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="d5fa28b2-74f7-4321-b741-ae871b1303d3"
+          Name="PaymentSummary"
+          DataType="Entity"
+          DataTypeEntityName="PaymentSummary"
+          DisplayName="Payment Summary">
+          <DefaultValue />
+        </FieldDef>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="ab31d12a-0779-49ea-9c9d-a2ee1bf73d49"
+          Name="Payments"
+          DataType="Entity"
+          IsCollection="true"
+          DataTypeEntityName="Payment" />
+      </Fields>
+      <HasContextVersionSettings>false</HasContextVersionSettings>
+      <Vocabulary
+        Revision="1"
+        PublicRevision="1"
+        Guid="899dac85-0772-40aa-af7a-1cbc95344f45"
+        Name="VocabularyDef1">
+        <Templates>
+          <TemplateDef
+            xsi:type="ExpressionTemplateDef"
+            Revision="1"
+            PublicRevision="1"
+            Guid="ed9ecde9-2025-4c9a-841b-2046c19f5418"
+            Name="ExpressionTemplateDef1">
+            <DisplayName>calculate monthly payment</DisplayName>
+            <MenuGroup>Mortgage Calculations</MenuGroup>
+            <BusinessLanguagePrototype>calculate payment using $Principal$, $APR$, and $TermInMonths$</BusinessLanguagePrototype>
+            <Placeholders>
+              <RuleRepositoryDefBase
+                xsi:type="TemplatePlaceholderDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="6bea7761-062f-40e5-888c-d759b7375e90"
+                Name="Principal">
+                <DisplayText>[Principal]</DisplayText>
+                <Accepts>
+                  <PlaceholderValueDef
+                    xsi:type="DataTypeValueDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="e602b021-f210-49a1-9807-ff739df9ab82"
+                    Name="DataTypeValueDef1">
+                    <DataType>Number</DataType>
+                  </PlaceholderValueDef>
+                </Accepts>
+                <IsMultiSelect>false</IsMultiSelect>
+              </RuleRepositoryDefBase>
+              <RuleRepositoryDefBase
+                xsi:type="TemplatePlaceholderDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="af1ee164-e861-4138-9a12-b430461094e3"
+                Name="APR">
+                <DisplayText>[APR]</DisplayText>
+                <Accepts>
+                  <PlaceholderValueDef
+                    xsi:type="DataTypeValueDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="dff86bdf-a184-4504-a2a1-149ec19f7e01"
+                    Name="DataTypeValueDef1">
+                    <DataType>Number</DataType>
+                  </PlaceholderValueDef>
+                </Accepts>
+                <IsMultiSelect>false</IsMultiSelect>
+              </RuleRepositoryDefBase>
+              <RuleRepositoryDefBase
+                xsi:type="TemplatePlaceholderDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="f48823e7-652f-44e9-a9be-e88cf83ade3a"
+                Name="TermInMonths">
+                <DisplayText>[TermInMonths]</DisplayText>
+                <Accepts>
+                  <PlaceholderValueDef
+                    xsi:type="DataTypeValueDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="165f9a66-8852-4211-aafa-76a5bb81b905"
+                    Name="DataTypeValueDef1">
+                    <DataType>Integer</DataType>
+                  </PlaceholderValueDef>
+                </Accepts>
+                <IsMultiSelect>false</IsMultiSelect>
+              </RuleRepositoryDefBase>
+            </Placeholders>
+            <TemplateScope>Local</TemplateScope>
+            <ExpressionPrototype>Round(((($Principal$ * (($APR$ / 100) / 12)) / (1 - ((1 + (($APR$ / 100) / 12)) ^ ($TermInMonths$ * -1)))) * 100) / 100, 2)</ExpressionPrototype>
+            <FunctionName>calculate_monthly_payment</FunctionName>
+            <SelectionMode>Template</SelectionMode>
+            <Impersonates>
+              <ImpersonationDef
+                xsi:type="DataTypeImpersonationDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="ff85eb38-f47d-4c1a-b9e0-dbbefe74efbb"
+                Name="DataTypeImpersonationDef5">
+                <DataType>Number</DataType>
+              </ImpersonationDef>
+            </Impersonates>
+          </TemplateDef>
+          <TemplateDef
+            xsi:type="AddCollectionMemberTemplateDef"
+            Revision="1"
+            PublicRevision="1"
+            Guid="e2068398-9e73-4df1-b029-705639a1f2d8"
+            Name="AddCollectionMemberTemplateDef1">
+            <DisplayName>add payment</DisplayName>
+            <MenuGroup>Mortgage Actions</MenuGroup>
+            <BusinessLanguagePrototype>add payment number $PaymentCount$ with a remaining balance of $RemainingBalance$ using payment method of $PaymentMethod$</BusinessLanguagePrototype>
+            <Placeholders>
+              <RuleRepositoryDefBase
+                xsi:type="TemplatePlaceholderDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="9f9d82b9-432d-4e02-ace9-0d735926fbbf"
+                Name="PaymentCount">
+                <DisplayText>[PaymentCount]</DisplayText>
+                <Accepts>
+                  <PlaceholderValueDef
+                    xsi:type="DataTypeValueDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="400e61a3-e0e1-491a-865e-8960f3ef0b6a"
+                    Name="DataTypeValueDef1">
+                    <DataType>Integer</DataType>
+                  </PlaceholderValueDef>
+                </Accepts>
+                <IsMultiSelect>false</IsMultiSelect>
+              </RuleRepositoryDefBase>
+              <RuleRepositoryDefBase
+                xsi:type="TemplatePlaceholderDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="c798ecf5-118c-4f81-a854-990f932ce0cb"
+                Name="RemainingBalance">
+                <DisplayText>[RemainingBalance]</DisplayText>
+                <Accepts>
+                  <PlaceholderValueDef
+                    xsi:type="DataTypeValueDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="4427b2ed-3549-421a-8eed-f702568476fc"
+                    Name="DataTypeValueDef1">
+                    <DataType>Number</DataType>
+                  </PlaceholderValueDef>
+                </Accepts>
+                <IsMultiSelect>false</IsMultiSelect>
+              </RuleRepositoryDefBase>
+              <RuleRepositoryDefBase
+                xsi:type="TemplatePlaceholderDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="fea5b9fe-7adf-491a-b19a-3069e003e70c"
+                Name="PaymentMethod">
+                <DisplayText>[PaymentMethod]</DisplayText>
+                <Accepts>
+                  <PlaceholderValueDef
+                    xsi:type="ListValueDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="41f2437b-904a-4338-94b5-b9219101499c"
+                    Name="ListValueDef1">
+                    <ListName>PaymentMethodValueList</ListName>
+                    <TreatValuesAsExpressions>false</TreatValuesAsExpressions>
+                  </PlaceholderValueDef>
+                </Accepts>
+                <IsMultiSelect>false</IsMultiSelect>
+              </RuleRepositoryDefBase>
+            </Placeholders>
+            <TemplateScope>Local</TemplateScope>
+            <TargetCollectionPrototype>Payments</TargetCollectionPrototype>
+            <MemberValues>
+              <CollectionMemberValueAssignmentDef
+                Revision="1"
+                PublicRevision="1"
+                Guid="91ffdab4-6400-483b-aca5-d7fec5b54f3f"
+                Name="CollectionMemberValueAssignmentDef1">
+                <MemberName>PaymentNumber</MemberName>
+                <MemberValuePrototype>$PaymentCount$</MemberValuePrototype>
+              </CollectionMemberValueAssignmentDef>
+              <CollectionMemberValueAssignmentDef
+                Revision="1"
+                PublicRevision="1"
+                Guid="105aff5a-7994-4e1e-9ace-aaf76d62dcbc"
+                Name="CollectionMemberValueAssignmentDef2">
+                <MemberName>PaymentDate</MemberName>
+                <MemberValuePrototype>AddMonths(Today(),paymentCount)</MemberValuePrototype>
+              </CollectionMemberValueAssignmentDef>
+              <CollectionMemberValueAssignmentDef
+                Revision="1"
+                PublicRevision="1"
+                Guid="a272ce9a-fa3e-498d-b088-663d4e531993"
+                Name="CollectionMemberValueAssignmentDef3">
+                <MemberName>Amount</MemberName>
+                <MemberValuePrototype>PaymentSummary.MonthlyPayment</MemberValuePrototype>
+              </CollectionMemberValueAssignmentDef>
+              <CollectionMemberValueAssignmentDef
+                Revision="1"
+                PublicRevision="1"
+                Guid="bba5e478-b484-41e8-baf8-5977fa783c7a"
+                Name="CollectionMemberValueAssignmentDef4">
+                <MemberName>RemainingBalance</MemberName>
+                <MemberValuePrototype>$RemainingBalance$</MemberValuePrototype>
+              </CollectionMemberValueAssignmentDef>
+              <CollectionMemberValueAssignmentDef
+                Revision="1"
+                PublicRevision="1"
+                Guid="56cb798e-2776-49c5-b68e-57ac4401a8ce"
+                Name="CollectionMemberValueAssignmentDef5">
+                <MemberName>PaymentMethod</MemberName>
+                <MemberValuePrototype>$PaymentMethod$</MemberValuePrototype>
+              </CollectionMemberValueAssignmentDef>
+            </MemberValues>
+            <CopyMode>ByReference</CopyMode>
+          </TemplateDef>
+        </Templates>
+        <TemplateAvailabilitySettings />
+      </Vocabulary>
+    </EntityDef>
+    <EntityDef
+      Revision="1"
+      PublicRevision="1"
+      Guid="bbdc9037-9716-4eb0-a115-08af2c0e2e54"
+      Name="LoanInfo"
+      DisplayName="Loan Info">
+      <RuleElements>
+        <RuleElementDef
+          xsi:type="RuleSetDef"
+          Revision="1"
+          PublicRevision="1"
+          Guid="733f98ee-5fa6-40bb-8161-1ceea13b906d"
+          Name="LoanValidationRules">
+          <FireMode>Explicit</FireMode>
+          <RunMode>SequentialRunOnce</RunMode>
+          <Rules>
+            <RuleElementDef
+              xsi:type="LanguageRuleDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="98c92bc1-b94d-4119-b9b3-86a2d53b0038"
+              Name="ValidateLoanInfo">
+              <Attributes>
+                <anyType
+                  xsi:type="CollectionItem">
+                  <Key>
+                    <Name>ReservedAttributeTokenKey</Name>
+                    <Guid>60fae55a-9a45-41a5-828a-bc71a3b65013</Guid>
+                  </Key>
+                  <Collection>
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0"
+                      Value="IfThenDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1"
+                      Value="ConditionGroupTemplateSingleCondition" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0"
+                      Value="ConditionArrayEqualityComparisionDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.0"
+                      Value="ArrayComparison_any" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2.0"
+                      Value="IsNotValidField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2.0.0"
+                      Value="MortgageCalculator.LoanInfo.APR.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2.1"
+                      Value="IsNotValidField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2.1.0"
+                      Value="MortgageCalculator.LoanInfo.Principal.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2.2"
+                      Value="IsNotValidField" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.1.0.2.2.0"
+                      Value="MortgageCalculator.LoanInfo.TermInYears.Implicit" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0"
+                      Value="MarkInvalidDefault" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.1"
+                      Value="MortgageCalculator.LoanInfo.ImplicitEntityTemplate" />
+                    <anyType
+                      xsi:type="XmlSerializableStringDictionaryItem"
+                      Key="0.3.0.3"
+                      Value="StringDesigner" />
+                  </Collection>
+                </anyType>
+              </Attributes>
+              <RuleElement
+                xsi:type="SimpleRuleDef"
+                Revision="1"
+                PublicRevision="1"
+                Guid="58a8f419-b1f3-4667-bba0-0d732502bb4e"
+                Name="ValidateLoanInfo">
+                <Condition
+                  LastAuthoringView="Syntax">
+                  <ReturnType>Boolean</ReturnType>
+                  <FormulaText>AnyAreTrue(IsInvalid(APR), IsInvalid(Principal), IsInvalid(TermInYears))</FormulaText>
+                </Condition>
+                <SubRules>
+                  <RuleElementDef
+                    xsi:type="SetFieldInvalidActionDef"
+                    Revision="1"
+                    PublicRevision="1"
+                    Guid="95fb40bd-c3de-4ee3-9adc-3574c9a0ff3d"
+                    Name="SetLoanInfoInvalid">
+                    <Message>
+                      <FormulaParseFormat>Token</FormulaParseFormat>
+                      <FormulaText>Loan info contains validation errors</FormulaText>
+                    </Message>
+                    <FieldName>LoanInfo</FieldName>
+                  </RuleElementDef>
+                </SubRules>
+                <HasContextVersionSettings>false</HasContextVersionSettings>
+              </RuleElement>
+              <HasContextVersionSettings>false</HasContextVersionSettings>
+            </RuleElementDef>
+          </Rules>
+          <HasContextVersionSettings>false</HasContextVersionSettings>
+        </RuleElementDef>
+      </RuleElements>
+      <Fields>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="a943d0ec-86ce-494a-87f1-b21b4445d3e4"
+          Name="Principal"
+          DataType="Number">
+          <AllowConstraintsMessage>
+            <FormulaParseFormat>Token</FormulaParseFormat>
+            <FormulaText>Principal must be provided</FormulaText>
+          </AllowConstraintsMessage>
+          <Constraints>
+            <FieldConstraintDef
+              xsi:type="NotNullDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="8beb0a81-b67e-4cac-b129-33a1e8eaec9c"
+              Name="NotNullDef1">
+              <Allow>false</Allow>
+              <Not>true</Not>
+            </FieldConstraintDef>
+          </Constraints>
+        </FieldDef>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="def8dadb-b05a-4d45-a891-cf4d4bff1d7f"
+          Name="APR"
+          DataType="Number">
+          <AllowConstraintsMessage>
+            <FormulaParseFormat>Token</FormulaParseFormat>
+            <FormulaText>APR must be provided</FormulaText>
+          </AllowConstraintsMessage>
+          <Constraints>
+            <FieldConstraintDef
+              xsi:type="NotNullDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="8cc3ed53-128f-4e4d-b324-e4a42633f65a"
+              Name="NotNullDef1">
+              <Allow>false</Allow>
+              <Not>true</Not>
+            </FieldConstraintDef>
+          </Constraints>
+        </FieldDef>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="17e9b51a-deae-4545-a95c-3b9cda2885d5"
+          Name="TermInYears"
+          DataType="Integer"
+          DisplayName="Term In Years">
+          <AllowConstraintsMessage>
+            <FormulaParseFormat>Token</FormulaParseFormat>
+            <FormulaText>TermInYears must be provided and greater than 10</FormulaText>
+          </AllowConstraintsMessage>
+          <Constraints>
+            <FieldConstraintDef
+              xsi:type="NotNullDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="3736355d-aa58-4474-8396-537bb788639a"
+              Name="NotNullDef1">
+              <Allow>false</Allow>
+              <Not>true</Not>
+            </FieldConstraintDef>
+            <FieldConstraintDef
+              xsi:type="LessThanDef"
+              Revision="1"
+              PublicRevision="1"
+              Guid="5ce539e0-af6f-4081-904f-02fe49572a7d"
+              Name="LessThanDef2">
+              <Allow>false</Allow>
+              <Not>true</Not>
+              <LessThanValue
+                xsi:type="xsd:string">10</LessThanValue>
+            </FieldConstraintDef>
+          </Constraints>
+        </FieldDef>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="4bf7223c-78cf-4311-9451-57c76ff840a9"
+          Name="TermInMonths"
+          DataType="Integer"
+          IsCalculated="true"
+          DisplayName="Term In Months">
+          <Calc
+            LastAuthoringView="Syntax">
+            <FormulaText>TermInYears * 12</FormulaText>
+          </Calc>
+        </FieldDef>
+      </Fields>
+      <HasContextVersionSettings>false</HasContextVersionSettings>
+      <CascadedReferences>
+        <CascadedReferenceDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="e7fed6b5-cf33-44df-b8b9-4e5a9b9b9581">
+          <ParentId>64cd6460-5fe4-42ee-96af-808f6d1d4984</ParentId>
+          <ChildId>bbdc9037-9716-4eb0-a115-08af2c0e2e54</ChildId>
+          <IsImplicit>true</IsImplicit>
+        </CascadedReferenceDef>
+      </CascadedReferences>
+    </EntityDef>
+    <EntityDef
+      Revision="1"
+      PublicRevision="1"
+      Guid="ae5a5614-5eed-4adb-84cb-e7bc97c9768a"
+      Name="PaymentSummary"
+      DisplayName="Payment Summary">
+      <Fields>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="00d5bc66-f8ee-4213-a5c2-5057344a2cd2"
+          Name="MonthlyPayment"
+          DataType="Number"
+          DisplayName="Monthly Payment" />
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="ad346098-db15-4bdb-b048-4b372c5a9604"
+          Name="TotalCost"
+          DataType="Number"
+          DisplayName="Total Cost" />
+      </Fields>
+      <HasContextVersionSettings>false</HasContextVersionSettings>
+      <CascadedReferences>
+        <CascadedReferenceDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="1c92559e-cc14-48cc-a526-5813f3b94d2c">
+          <ParentId>64cd6460-5fe4-42ee-96af-808f6d1d4984</ParentId>
+          <ChildId>ae5a5614-5eed-4adb-84cb-e7bc97c9768a</ChildId>
+          <IsImplicit>true</IsImplicit>
+        </CascadedReferenceDef>
+      </CascadedReferences>
+    </EntityDef>
+    <EntityDef
+      Revision="1"
+      PublicRevision="1"
+      Guid="ac3f680a-2d9c-4742-9122-573ba96654fb"
+      Name="Payment"
+      AuthoringIsExpanded="false">
+      <Fields>
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="2dab73a2-6e4a-4d88-bc81-209de23fa6ff"
+          Name="PaymentNumber"
+          AuthoringIsExpanded="false"
+          DataType="Integer"
+          DisplayName="Payment Number" />
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="228a4b9e-4729-441e-ab06-c83c14a009cc"
+          Name="PaymentDate"
+          AuthoringIsExpanded="false"
+          DataType="Date"
+          DisplayName="Payment Date" />
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="1cd33651-65f1-499c-ac9d-d52a165d37b0"
+          Name="Amount"
+          AuthoringIsExpanded="false"
+          DataType="Number" />
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="ee435959-e339-4b13-83fb-eb7b0c2c367d"
+          Name="RemainingBalance"
+          AuthoringIsExpanded="false"
+          DataType="Number"
+          DisplayName="Remaining Balance" />
+        <FieldDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="805feb0b-ea63-480d-9e4e-11d3a7f2c690"
+          Name="PaymentMethod"
+          DataType="String"
+          DisplayName="Payment Method" />
+      </Fields>
+      <HasContextVersionSettings>false</HasContextVersionSettings>
+      <CascadedReferences>
+        <CascadedReferenceDef
+          Revision="1"
+          PublicRevision="1"
+          Guid="cce2c213-0bde-418e-994e-ec2357b5374c">
+          <ParentId>64cd6460-5fe4-42ee-96af-808f6d1d4984</ParentId>
+          <ChildId>ac3f680a-2d9c-4742-9122-573ba96654fb</ChildId>
+          <IsImplicit>true</IsImplicit>
+        </CascadedReferenceDef>
+      </CascadedReferences>
+    </EntityDef>
+  </Entities>
+  <DataElements xmlns="http://www.inrule.com/XmlSchema/Schema">
+    <DataElementDef
+      xsi:type="InlineValueListDef"
+      Revision="1"
+      PublicRevision="1"
+      Guid="bef3419a-90d3-4542-a629-3d04a10dcce7"
+      Name="PaymentMethodValueList">
+      <SortDirection>Ascending</SortDirection>
+      <SortMode>None</SortMode>
+      <Items>
+        <ValueListItemDef
+          Guid="3fdd5006-0a9c-4ab9-9b08-04a4b144945b">
+          <Value>Check</Value>
+        </ValueListItemDef>
+        <ValueListItemDef
+          Guid="de98e18a-6f8d-4fd2-beb6-466e84bf0026">
+          <Value>Cash</Value>
+        </ValueListItemDef>
+        <ValueListItemDef
+          Guid="6acf9b6b-516d-4427-bd63-99b2f8df3ac2">
+          <Value>Electronic Transfer</Value>
+        </ValueListItemDef>
+      </Items>
+    </DataElementDef>
+  </DataElements>
+</RuleApplicationDef>
