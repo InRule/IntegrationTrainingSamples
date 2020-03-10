@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using InRule.Authoring.Extensions;
 using InRule.Authoring.BusinessLanguage.Tokens;
 using InRule.Repository.Decisions;
+using InRule.Repository.EndPoints;
 
 namespace IntegrationTrainingSamples
 {
@@ -777,6 +778,25 @@ namespace IntegrationTrainingSamples
             Console.WriteLine("Checked out MultiplicationApp.");
 
             catCon.Checkin(appDef, "Demo checkout/checkin");
+            Console.WriteLine("Checked in MultiplicationApp.");
+        }
+        private void ModifyRuleAppWithCheckin()
+        {
+            Console.WriteLine("Checking out MultiplicationApp...");
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword);
+            var appRef = catCon.GetRuleAppRef("MultiplicationApp");
+            var appDef = catCon.GetLatestRuleAppRevision(appRef.Guid);
+            catCon.CheckoutRuleApplication(appDef, true, "Updating data connections for new environment");
+
+            Console.WriteLine("Modifying MultiplicationApp...");
+            if (appDef.EndPoints.Any(e => e.EndPointType == EndPointType.DatabaseConnection && e.Name == "MyDbConnection"))
+                ((DatabaseConnection)appDef.EndPoints["MyDbConnection"]).ConnectionString = "newConnectionString";
+
+            if (appDef.EndPoints.Any(e => e.EndPointType == EndPointType.RestService && e.Name == "MyRestService"))
+                ((RestServiceDef)appDef.EndPoints["MyRestService"]).RootUrl = "newRestRootUrl";
+
+            Console.WriteLine("Checking in MultiplicationApp...");
+            catCon.Checkin(appDef, "Updated data connections for new environment");
             Console.WriteLine("Checked in MultiplicationApp.");
         }
         private void UndoCheckout()
