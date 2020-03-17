@@ -576,7 +576,7 @@ namespace IntegrationTrainingSamples
         {
             Console.WriteLine("Rule Apps contained in the catalog located at " + _catalogServiceUri);
 
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword);
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
             foreach (var ruleApp in catCon.GetAllRuleApps())
             {
                 var ruleAppDefInfo = ruleApp.Key;
@@ -736,7 +736,7 @@ namespace IntegrationTrainingSamples
 
         private void ListRuleDetails()
         {
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword);
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
             foreach (var ruleApp in catCon.GetAllRuleApps())
             {
                 var ruleAppDefInfo = ruleApp.Key;
@@ -768,10 +768,39 @@ namespace IntegrationTrainingSamples
         #endregion
 
         #region Catalog Interaction Demos
+        private void AddRuleAppToCatalog()
+        {
+            Console.WriteLine("Perparing to add new Rule Application to the Catalog...");
+            var newRuleAppDef = RuleApplicationDef.Load(@"..\..\..\RuleApps\NewCheckinTest.ruleappx");
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            
+            //This will throw an exception if a Rule App already exists with the same GUID
+            catCon.CreateRuleApplication(newRuleAppDef, "Created new catalog entry for " + newRuleAppDef.Name);
+            //catCon.ApplyLabel(newRuleAppDef, "LIVE"); //Optional, based on needs
+            
+            Console.WriteLine("Addition complete!");
+        }
+        private void OverwriteRuleAppInCatalog()
+        {
+            Console.WriteLine("Perparing to Update Rule Application in the Catalog...");
+            var updatedRuleAppDef = RuleApplicationDef.Load(@"..\..\..\RuleApps\NewCheckinTest.ruleappx");
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+
+            // OPTION 1 : If the same file is consistently used, you can simply check out and back in with the same file - the GUID is used for lookup
+            catCon.CheckoutRuleApplicationAndSchema(updatedRuleAppDef, "Automated Update");
+            catCon.Checkin(updatedRuleAppDef, "Automated Push");
+
+            // OPTION 2 : You can overwrite the full Rule App in the catalog reguardless of what the source Rule App is
+            //var existingRuleApp = catCon.GetRuleAppRef("NewRuleApplication");
+            //catCon.OverwriteRuleApplication(existingRuleApp.Guid, updatedRuleAppDef, true, "Overwritten version");
+
+            //catCon.ApplyLabel(newRuleAppDef, "LIVE"); //Optional, based on needs
+            Console.WriteLine("Update complete!");
+        }
         private void CheckOutRuleApp()
         {
             Console.WriteLine("Checking out MultiplicationApp...");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword);
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
             var appRef = catCon.GetRuleAppRef("MultiplicationApp");
             var appDef = catCon.GetLatestRuleAppRevision(appRef.Guid);
             catCon.CheckoutRuleApplication(appDef, true, "Testing code-based catalog interactions");
@@ -783,7 +812,7 @@ namespace IntegrationTrainingSamples
         private void ModifyRuleAppWithCheckin()
         {
             Console.WriteLine("Checking out MultiplicationApp...");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword);
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
             var appRef = catCon.GetRuleAppRef("MultiplicationApp");
             var appDef = catCon.GetLatestRuleAppRevision(appRef.Guid);
             catCon.CheckoutRuleApplication(appDef, true, "Updating data connections for new environment");
@@ -795,6 +824,7 @@ namespace IntegrationTrainingSamples
             if (appDef.EndPoints.Any(e => e.EndPointType == EndPointType.RestService && e.Name == "MyRestService"))
                 ((RestServiceDef)appDef.EndPoints["MyRestService"]).RootUrl = "newRestRootUrl";
 
+            var fileApp = new FileSystemRuleApplicationReference("").GetRuleApplicationDef();
             Console.WriteLine("Checking in MultiplicationApp...");
             catCon.Checkin(appDef, "Updated data connections for new environment");
             Console.WriteLine("Checked in MultiplicationApp.");
@@ -802,7 +832,7 @@ namespace IntegrationTrainingSamples
         private void UndoCheckout()
         {
             Console.WriteLine("Undoing Checkout of MultiplicationApp...");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword);
+            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
             var appRef = catCon.GetRuleAppRef("MultiplicationApp");
             var appDef = catCon.GetLatestRuleAppRevision(appRef.Guid);
             catCon.UndoRuleAppCheckout(appDef);
@@ -814,7 +844,7 @@ namespace IntegrationTrainingSamples
             var sourceRuleApp = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppName, _catalogUsername, _catalogPassword, label);
             var sourceRuleAppDef = sourceRuleApp.GetRuleApplicationDef();
 
-            var destCatCon = new RuleCatalogConnection(new Uri(destinationCatUrl), TimeSpan.FromSeconds(60), destinationCatUser, destinationCatPass);
+            var destCatCon = new RuleCatalogConnection(new Uri(destinationCatUrl), TimeSpan.FromSeconds(60), destinationCatUser, destinationCatPass, RuleCatalogAuthenticationType.BuiltIn);
             var newRuleAppDef = destCatCon.PromoteRuleApplication(sourceRuleAppDef, "Comment");
             destCatCon.ApplyLabel(newRuleAppDef, "LIVE");
         }
@@ -825,7 +855,7 @@ namespace IntegrationTrainingSamples
 
             Console.WriteLine($"Searching for '{searchQuery}' in the {field} from catalog located at {_catalogServiceUri}");
 
-            using (var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword))
+            using (var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn))
             {
                 foreach (var ruleApp in catCon.GetAllRuleApps())
                 {
