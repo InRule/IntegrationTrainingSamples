@@ -47,7 +47,7 @@ namespace IntegrationTrainingSamples.RuleEngines
         }
         public static async Task<T> Apply<T>(Ruleapp ruleApp, string entityName, T initialEntityState) where T : new()
         {
-            RuleRequest request = new ApplyRulesRequest()
+            EntityStateRuleRequest request = new ApplyRulesRequest()
             {
                 RuleApp = ruleApp,
                 EntityName = entityName
@@ -68,7 +68,7 @@ namespace IntegrationTrainingSamples.RuleEngines
         }
         public static async Task<T> Execute<T>(Ruleapp ruleApp, string entityName, string ruleSetName, T initialEntityState) where T : new()
         {
-            RuleRequest request = new ExecuteRuleSetRequest()
+            EntityStateRuleRequest request = new ExecuteRuleSetRequest()
             {
                 RuleApp = ruleApp,
                 EntityName = entityName,
@@ -76,16 +76,63 @@ namespace IntegrationTrainingSamples.RuleEngines
             };
             return await CallService(request, initialEntityState);
         }
+
+        public static async Task<O> ExecuteDecision<I,O>(string repositoryRuleAppName, string decisionName, I input) where O : new()
+        {
+            var ruleApp = new Ruleapp()
+            {
+                RepositoryRuleAppRevisionSpec = new Repositoryruleapprevisionspec()
+                {
+                    RuleApplicationName = repositoryRuleAppName
+                }
+            };
+            return await ExecuteDecision<I,O>(ruleApp, decisionName, input);
+        }
+        public static async Task<O> ExecuteDecision<I,O>(Ruleapp ruleApp, string decisionName, I input) where O : new()
+        {
+            var request = new ExecuteDecisionRequest()
+            {
+                RuleApp = ruleApp,
+                DecisionName = decisionName,
+                InputState = JsonConvert.SerializeObject(input)
+            };
+
+            var result = await CallService(request);
+
+            if (result == null)
+            {
+                return new O();
+            }
+
+            var responseObject = JsonConvert.DeserializeObject<DecisionExecutionResponse>(result);
+            string jsonOutput = responseObject.OutputState;
+            O finalEntityState = JsonConvert.DeserializeObject<O>(jsonOutput);
+
+            return finalEntityState;
+        }
         #endregion
 
         #region Helpers
-        private static async Task<T> CallService<T>(RuleRequest request, T initialEntityState) where T : new()
+        private static async Task<T> CallService<T>(EntityStateRuleRequest request, T initialEntityState) where T : new()
+        {
+            request.EntityState = JsonConvert.SerializeObject(initialEntityState);
+            var result = await CallService(request);
+
+            if (result == null)
+            {
+                return new T();
+            }
+
+            RuleExecutionResponse responseObject = JsonConvert.DeserializeObject<RuleExecutionResponse>(result);
+            string entityStateString = responseObject.EntityState;
+            T finalEntityState = JsonConvert.DeserializeObject<T>(entityStateString);
+
+            return finalEntityState;
+        }
+        private static async Task<string> CallService(RuleRequest request)
         {
             try
             {
-                request.EntityState = JsonConvert.SerializeObject(initialEntityState);
-                string stringContent = JsonConvert.SerializeObject(request);
-
                 request.RuleEngineServiceOutputTypes = new Ruleengineserviceoutputtypes
                 {
                     ActiveNotifications = true,
@@ -98,23 +145,14 @@ namespace IntegrationTrainingSamples.RuleEngines
                 if (string.IsNullOrEmpty(_rexUrl))
                     throw new Exception("RexUrl Configuration Setting has not been defined.");
 
+                string stringContent = JsonConvert.SerializeObject(request);
                 string responseString = await Post(_rexUrl + "/HttpService.svc/" + request.Route, stringContent);
-
-                if(string.IsNullOrEmpty(responseString))
-                {
-                    return new T();
-                }
-
-                RuleExecutionResponse responseObject = JsonConvert.DeserializeObject<RuleExecutionResponse>(responseString);
-                string entityStateString = responseObject.EntityState;
-                T finalEntityState = JsonConvert.DeserializeObject<T>(entityStateString);
-
-                return finalEntityState;
+                return responseString;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return new T();
+                return null;
             }
         }
         private static async Task<string> Post(string targetUrl, string stringContent, bool logRaw = false)

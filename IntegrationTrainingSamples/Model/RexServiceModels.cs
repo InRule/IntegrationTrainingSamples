@@ -3,10 +3,13 @@
     public abstract class RuleRequest
     {
         public Ruleapp RuleApp { get; set; }
-        public string EntityState { get; set; }
-        public string EntityName { get; set; }
         public Ruleengineserviceoutputtypes RuleEngineServiceOutputTypes { get; set; }
         public abstract string Route { get; }
+    }
+    public abstract class EntityStateRuleRequest : RuleRequest
+    {
+        public string EntityName { get; set; }
+        public string EntityState { get; set; }
     }
     public class Ruleapp
     {
@@ -32,12 +35,11 @@
         public bool RuleExecutionLog { get; set; }
     }
 
-    public class ApplyRulesRequest : RuleRequest
+    public class ApplyRulesRequest : EntityStateRuleRequest
     {
         public override string Route { get { return "ApplyRules"; } }
     }
-
-    public class ExecuteRuleSetRequest : RuleRequest
+    public class ExecuteRuleSetRequest : EntityStateRuleRequest
     {
         public override string Route { get { return "ExecuteRuleSet"; } }
         public Parameter[] Parameters { get; set; }
@@ -48,14 +50,28 @@
         public string Name { get; set; }
         public string Value { get; set; }
     }
+    public class ExecuteDecisionRequest : RuleRequest
+    {
+        public override string Route { get { return "ExecuteDecision"; } }
 
-    public class RuleExecutionResponse
+        public string DecisionName { get; set; }
+        public string InputState { get; set; }
+    }
+
+    public class ExecutionResponse
     {
         public Activenotification[] ActiveNotifications { get; set; }
         public Activevalidation[] ActiveValidations { get; set; }
-        public string EntityState { get; set; }
         public bool HasRuntimeErrors { get; set; }
         public Ruleexecutionlog RuleExecutionLog { get; set; }
+    }
+    public class RuleExecutionResponse : ExecutionResponse
+    {
+        public string EntityState { get; set; }
+    }
+    public class DecisionExecutionResponse : ExecutionResponse
+    {
+        public string OutputState { get; set; }
     }
     public class Activenotification
     {
