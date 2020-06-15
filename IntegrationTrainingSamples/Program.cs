@@ -27,6 +27,7 @@ using InRule.Authoring.Extensions;
 using InRule.Authoring.BusinessLanguage.Tokens;
 using InRule.Repository.Decisions;
 using InRule.Repository.EndPoints;
+using InRule.Repository.Vocabulary;
 
 namespace IntegrationTrainingSamples
 {
@@ -53,9 +54,9 @@ namespace IntegrationTrainingSamples
                 Console.WriteLine();
                 Console.WriteLine("Commands:");
                 Console.WriteLine("1: Demonstrate Cold Start Penalty");
-                Console.WriteLine("   1.1: Pre-Compile Rule App");
+                Console.WriteLine("   1.1: Limit Rule App cache size");
                 Console.WriteLine("   1.2: Reset Rule App cache to Default");
-                Console.WriteLine("   1.3: Limit Rule App cache size");
+                Console.WriteLine("   1.3: Pre-Compile Rule App");
                 Console.WriteLine("2: List Rule Apps from Catalog");
                 Console.WriteLine("   2.1: List Rule Sets");
                 Console.WriteLine("   2.2: List Business Language Logic");
@@ -79,13 +80,13 @@ namespace IntegrationTrainingSamples
                         program.ColdStartDemo();
                         break;
                     case "1.1":
-                        program.PreCompile();
+                        program.LimitCacheSize();
                         break;
                     case "1.2":
                         program.ResetCache();
                         break;
                     case "1.3":
-                        program.LimitCacheSize();
+                        program.PreCompile();
                         break;
                     case "2":
                         program.ListRuleApps();
@@ -510,7 +511,6 @@ namespace IntegrationTrainingSamples
             }
         }
         #endregion
-
         #endregion
 
         #region Cold Start and Caching Demos
@@ -592,29 +592,61 @@ namespace IntegrationTrainingSamples
             var ruleApp = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppName, _catalogUsername, _catalogPassword, "LIVE");
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
 
-            //var data = ruleAppDef.Entities.ToList<EntityDef>().ToDictionary(k => k.Name, v => v.GetAllRuleSets().Select(rs => rs.Name).ToList());
+            //var entityRuleSetDictionary = ruleAppDef.Entities.ToList<EntityDef>().ToDictionary(k => k.Name, v => v.GetAllRuleSets().Select(rs => rs.Name).ToList());
 
             foreach (EntityDef entity in ruleAppDef.Entities)
             {
                 Console.WriteLine($"");
                 Console.WriteLine($"Entity: {entity.Name}");
 
-                foreach (var field in entity.Fields)
+                if(!string.IsNullOrEmpty(entity.Comments))
+                    Console.WriteLine($"    Description: {entity.Comments}");
+
+                foreach (FieldDef field in entity.Fields)
                 {
-                    var castField = ((FieldDef)field);
-                    Console.WriteLine($"    Property: {castField.Name} ({castField.DataType})");
+                    Console.WriteLine($"    Property: {field.Name} ({field.DataType})");
+                    if (!string.IsNullOrEmpty(entity.Comments))
+                        Console.WriteLine($"        Description: {field.Comments}");
                 }
 
-                foreach (var ruleSet in entity.GetAllRuleSets())
+                foreach (RuleSetDef ruleSet in entity.GetAllRuleSets())
                 {
                     var xml = InRule.Common.Utilities.XmlSerializationUtility.ObjectToXML(ruleSet);
                     Console.WriteLine($"RuleSet: {ruleSet.Name} ({ruleSet.FireMode.ToString()})" + GetDescriptionSuffix(ruleSet.Comments));
+
+                    if (!string.IsNullOrEmpty(ruleSet.Comments))
+                        Console.WriteLine($"    Description: {ruleSet.Comments}");
 
                     foreach (RuleSetParameterDef parameter in ruleSet.Parameters)
                         Console.WriteLine($"    Parameter: {parameter.Name} ({parameter.DataType})");
 
                     foreach(RuleRepositoryDefBase rule in ruleSet.GetAllRuleElements())
                         Console.WriteLine("    Rule: " + rule.Name + GetDescriptionSuffix(rule.Comments));
+                }
+
+                if (entity.Vocabulary != null && entity.Vocabulary.Templates != null && entity.Vocabulary.Templates.Any())
+                {
+                    Console.WriteLine($"");
+                    Console.WriteLine($"Vocabulary: {entity.Vocabulary.Name}");
+                    foreach (TemplateDef vocabTemplate in entity.Vocabulary.Templates)
+                    {
+                        Console.WriteLine($"    Vocab Template: {vocabTemplate.Name} ({vocabTemplate.TemplateType})");
+
+                        if (!string.IsNullOrEmpty(vocabTemplate.Comments))
+                            Console.WriteLine($"        Description: {vocabTemplate.Comments}");
+                    }
+                }
+            }
+
+            if (ruleAppDef.DataElements != null && ruleAppDef.DataElements.Count > 0)
+            {
+                Console.WriteLine($"");
+                foreach (DataElementDef dataElement in ruleAppDef.DataElements)
+                {
+                    Console.WriteLine($"Data Element: {dataElement.Name} ({dataElement.DataElementType})");
+
+                    if (!string.IsNullOrEmpty(dataElement.Comments))
+                        Console.WriteLine($"    Description: {dataElement.Comments}");
                 }
             }
         }
@@ -839,16 +871,6 @@ namespace IntegrationTrainingSamples
             Console.WriteLine("Undid Checkout of MultiplicationApp.");
         }
 
-        private void PromoteRuleApp(string ruleAppName, string label, string destinationCatUrl, string destinationCatUser, string destinationCatPass)
-        {
-            var sourceRuleApp = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppName, _catalogUsername, _catalogPassword, label);
-            var sourceRuleAppDef = sourceRuleApp.GetRuleApplicationDef();
-
-            var destCatCon = new RuleCatalogConnection(new Uri(destinationCatUrl), TimeSpan.FromSeconds(60), destinationCatUser, destinationCatPass, RuleCatalogAuthenticationType.BuiltIn);
-            var newRuleAppDef = destCatCon.PromoteRuleApplication(sourceRuleAppDef, "Comment");
-            destCatCon.ApplyLabel(newRuleAppDef, "LIVE");
-        }
-
         public List<string> SearchCatalogForDescription(SearchField field, string searchQuery)
         {
             List<string> results = new List<string>();
@@ -924,7 +946,7 @@ namespace IntegrationTrainingSamples
         }
         #endregion
 
-        #region Automation and Singles
+        #region Automation, CI/CD, and Singles
         private void BuildAndRunInMemoryRuleApp()
         {
             var ruleApp = new RuleApplicationDef("MyAwesomeInMemoryRuleApp");
@@ -991,6 +1013,15 @@ namespace IntegrationTrainingSamples
                 }
 
             }
+        }
+        private void PromoteRuleApp(string ruleAppName, string label, string destinationCatUrl, string destinationCatUser, string destinationCatPass)
+        {
+            var sourceRuleApp = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppName, _catalogUsername, _catalogPassword, label);
+            var sourceRuleAppDef = sourceRuleApp.GetRuleApplicationDef();
+
+            var destCatCon = new RuleCatalogConnection(new Uri(destinationCatUrl), TimeSpan.FromSeconds(60), destinationCatUser, destinationCatPass, RuleCatalogAuthenticationType.BuiltIn);
+            var newRuleAppDef = destCatCon.PromoteRuleApplication(sourceRuleAppDef, "Comment");
+            destCatCon.ApplyLabel(newRuleAppDef, "LIVE");
         }
 
         public void RetrieveIrJSFromDistributionService()
@@ -1117,7 +1148,7 @@ namespace IntegrationTrainingSamples
         }
         #endregion
 
-        #region Execution Helper Methods
+        #region Execution Helper and Demo Methods
         private double IrSDKApplyMultiplication(double factorA, double factorB, bool provideFeedback = true, bool addLogOptions = false)
         {
             if(provideFeedback) Console.WriteLine("Performing irSDK Apply Rule");
