@@ -219,6 +219,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\AuthoringInCodeExtensions.cs" />
     <Compile Include="Helpers\ConsoleMetricLogger.cs" />
     <Compile Include="Helpers\ServiceHelpers.cs" />
     <Compile Include="Helpers\IService.cs" />

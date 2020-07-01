@@ -985,6 +985,34 @@ namespace IntegrationTrainingSamples
             }
         }
 
+        private RuleApplicationDef GetRuleAppWithUpdatedSettings()
+        {
+            var ruleApp = GetCatalogRuleApp("UpdateAppSample").GetRuleApplicationDef();
+
+            #region Retrieve Data
+            Dictionary<string, string> newInlineValueListData = new Dictionary<string, string>() {
+                { "NewValue1", "NewDisplayName1" },
+                { "NewValue2", null }
+            };
+            object[,] newInlineTableData = {
+                { "NewName1", "NewFirstValue", "NewSecondValue" },
+                { "NewName2", "NewerFirstValue", "NewerSecondValue" }
+            };
+            #endregion
+
+            ruleApp.UpdateDbConnectionString("DatabaseConnection1", "NewConnectionString");
+            ruleApp.UpdateRestRootUrl("RestService1", "NewBaseUrl");
+            ruleApp.UpdateRestOperationHeader("RestOperation1", "Authorization", "APIKEY NewApiTokenValue");
+            ruleApp.UpdateFieldDefaultValue("Entity1", "Field1", "NewDefaultValue");
+            ruleApp.UpdateInlineValueList("InlineValueList1", newInlineValueListData);
+            ruleApp.UpdateInlineTable("InlineTable1", newInlineTableData);
+
+            //ruleApp.SaveToFile($"UpdateAppSample_Updated.ruleappx");
+            // TODO: Promote Rule App
+
+            return ruleApp;
+        }
+
         public void RunTestSuite(string ruleAppFilePath, string testSuiteFilePath)
         {
             var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
