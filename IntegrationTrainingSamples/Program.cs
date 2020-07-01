@@ -39,6 +39,7 @@ namespace IntegrationTrainingSamples
         public string _catalogServiceUri = "";
         private string _catalogUsername = "";
         private string _catalogPassword = "";
+        private IrCatalogConnectionSettings _catalogSettings = null;
         private WebServiceHost _host;
 
         static void Main(string[] args)
@@ -147,6 +148,12 @@ namespace IntegrationTrainingSamples
                 _catalogServiceUri = ConfigurationManager.AppSettings["CatalogUrl"];
                 _catalogUsername = ConfigurationManager.AppSettings["CatalogUsername"];
                 _catalogPassword = ConfigurationManager.AppSettings["CatalogPassword"];
+                _catalogSettings = new IrCatalogConnectionSettings()
+                {
+                    Url = _catalogServiceUri,
+                    Username = _catalogUsername,
+                    Password = _catalogPassword
+                };
             }
             catch (Exception ex)
             {
@@ -1148,52 +1155,7 @@ namespace IntegrationTrainingSamples
         }
         #endregion
 
-        #region Execution Helper and Demo Methods
-        private double IrSDKApplyMultiplication(double factorA, double factorB, bool provideFeedback = true, bool addLogOptions = false)
-        {
-            if(provideFeedback) Console.WriteLine("Performing irSDK Apply Rule");
-            try
-            {
-                var problem = new MultiplicationProblem()
-                {
-                    FactorA = factorA,
-                    FactorB = factorB
-                };
-
-                var catalogConnectionInfo = new IrCatalogConnectionSettings()
-                {
-                    Url = _catalogServiceUri,
-                    Username = _catalogUsername,
-                    Password = _catalogPassword
-                };
-
-                var logOptions = EngineLogOptions.None;
-                if (addLogOptions)
-                    logOptions = EngineLogOptions.SummaryStatistics | EngineLogOptions.DetailStatistics;
-
-                IrSDKClient.InvokeEngine(catalogConnectionInfo, "MultiplicationApp", "MultiplicationProblem", problem, engineLogOptions: logOptions, log: false);
-
-                return problem.Result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return 0;
-            }
-        }
-        private string IrSDKApplyJson(string ruleApp, string entityName, string entityState)
-        {
-            var catalogConnectionInfo = new IrCatalogConnectionSettings()
-            {
-                Url = _catalogServiceUri,
-                Username = _catalogUsername,
-                Password = _catalogPassword
-            };
-
-            return IrSDKClient.InvokeEngine(catalogConnectionInfo, ruleApp, entityName, entityState, log: false);
-        }
-
-        //For demo purposes - denormalizes OOTB request flow into one thread
+        #region Execution Demo Methods
         private async Task<MultiplicationProblem> ApplyRulesViaRex_Denormalized(MultiplicationProblem problem)
         {
             string OOBRuleServiceUrl = ConfigurationManager.AppSettings["RexUrl"] + "/HttpService.svc/";
@@ -1218,11 +1180,127 @@ namespace IntegrationTrainingSamples
 
             return finalEntityState;
         }
+
+        private MultiplicationProblem ApplyRulesViaIrSDK_Denormalized(IrCatalogConnectionSettings catalog, MultiplicationProblem initialEntityState)
+        {
+            try
+            {
+                RuleApplicationReference ruleAppRef = new CatalogRuleApplicationReference(catalog.Url, "MultiplicationApp", catalog.Username, catalog.Password);
+
+                using (var session = new RuleSession(ruleAppRef))
+                {
+                    #region Examples of Overrides
+                    //Override REST endpoint root URL
+                    /*
+                    var endpoints = session.RuleApplication.GetRuleApplicationDef().EndPoints;
+                    if (endpoints.Contains("ExchangeRateService") && endpoints["ExchangeRateService"].EndPointType == InRule.Repository.EndPoints.EndPointType.RestService)
+                        session.Overrides.OverrideRestServiceRootUrl("ExchangeRateService", "https://api.exchangeratesapi.io");
+                    */
+
+                    //Override Inline Table
+                    /*
+                    DataSet newDataSet = new DataSet();
+                    //<?xml version="1.0" standalone="yes"?><NewDataSet><Table1><ID>1</ID><Name>Alan Override</Name></Table1><Table1><ID>2</ID><Name>Condiments</Name></Table1></NewDataSet>
+                    newDataSet.ReadXml(@"DataTable.xml");
+                    var dataElements = session.RuleApplication.GetRuleApplicationDef().DataElements;
+                    if(dataElements.Contains("InlineTable1") && dataElements["InlineTable1"] is TableDef)
+                        session.Overrides.OverrideTable("InlineTable1", newDataSet.Tables["Table1"]);
+                    */
+                    #endregion
+
+                    Entity entity = session.CreateEntity("MultiplicationProblem", initialEntityState);
+
+                    session.ApplyRules();
+
+                    foreach (var notification in session.GetNotifications())
+                        Console.WriteLine($"Notification {notification.Type}: {notification.Message}");
+                }
+                return initialEntityState;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
+
+        public double ExecuteDecisionViaIrSDK_Denormalized(int principal, int apr, int termInYears)
+        {
+            try
+            {
+                RuleApplicationReference ruleAppRef = new CatalogRuleApplicationReference(_catalogSettings.Url, "MortgageCalculator", _catalogSettings.Username, _catalogSettings.Password);
+
+                using (var session = new RuleSession(ruleAppRef))
+                {
+                    //Example 1 : JSON string
+                    var jsonDecision = session.CreateDecision("MortgageSummary");
+                    string inputJson = $"{{ 'Principal': '{principal}', 'APR': '{apr}', 'TermInYears': '{termInYears}',  }}";
+                    DecisionResult jsonResult = jsonDecision.Execute(inputJson, EntityStateType.Json);
+
+                    //Example 2 : Embedded Inputs
+                    var embeddedDecision = session.CreateDecision("MortgageSummary");
+                    DecisionResult embededResult = embeddedDecision.Execute(new DecisionInput("Principal", 500000), new DecisionInput("APR", 3), new DecisionInput("TermInYears", 30));
+                    
+                    //Example 3 : Explicitly Created Input Entity
+                    var info = session.CreateEntity("LoanInfo");
+                    info.Fields["Principal"].SetValue(principal);
+                    info.Fields["APR"].SetValue(apr);
+                    info.Fields["TermInYears"].SetValue(termInYears);
+                    var entityDecision = session.CreateDecision("MortgageSummaryFromEntity");
+                    DecisionResult entityResult = entityDecision.Execute(new DecisionInput("Info", info));
+
+                    foreach (var notification in session.GetNotifications())
+                        Console.WriteLine($"Notification {notification.Type}: {notification.Message}");
+
+                    var output = JsonConvert.DeserializeObject<dynamic>(jsonResult.ToJson());
+                    return (double)(output.Summary.MonthlyPayment);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return 0;
+            }
+        }
+
         private class MultiplicationProblem
         {
             public double FactorA;
             public double FactorB;
             public double Result;
+        }
+
+        #endregion
+
+        #region Execution Helper Methods
+        private double IrSDKApplyMultiplication(double factorA, double factorB, bool provideFeedback = true, bool addLogOptions = false)
+        {
+            if(provideFeedback) Console.WriteLine("Performing irSDK Apply Rule");
+            try
+            {
+                var problem = new MultiplicationProblem()
+                {
+                    FactorA = factorA,
+                    FactorB = factorB
+                };
+
+                var logOptions = EngineLogOptions.None;
+                if (addLogOptions)
+                    logOptions = EngineLogOptions.SummaryStatistics | EngineLogOptions.DetailStatistics;
+
+                IrSDKClient.InvokeEngine(_catalogSettings, "MultiplicationApp", "MultiplicationProblem", problem, engineLogOptions: logOptions, log: false);
+
+                return problem.Result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return 0;
+            }
+        }
+        private string IrSDKApplyJson(string ruleApp, string entityName, string entityState)
+        {
+            return IrSDKClient.InvokeEngine(_catalogSettings, ruleApp, entityName, entityState, log: false);
         }
         #endregion
 

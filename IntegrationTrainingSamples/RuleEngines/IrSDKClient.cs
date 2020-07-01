@@ -16,15 +16,11 @@ namespace IntegrationTrainingSamples.RuleEngines
                 RuleApplicationReference ruleAppRef = new CatalogRuleApplicationReference(catalog.Url, ruleAppName, catalog.Username, catalog.Password, label);
 
                 //Step 2 - Create RuleSession
-                using (var session = new RuleSession(ruleApplicationReference: ruleAppRef))
+                using (var session = new RuleSession(ruleAppRef))
                 {
                     //Step 3 - Define Execution Settings (optional)
                     session.Settings.LogOptions = engineLogOptions;// EngineLogOptions.SummaryStatistics | EngineLogOptions.DetailStatistics | EngineLogOptions.StateChanges;
-
-                    //Override endpoint configuration
-                    //var endpoints = session.RuleApplication.GetRuleApplicationDef().EndPoints.ToList();
-                    //if (endpoints.Any(e => e.EndPointType == InRule.Repository.EndPoints.EndPointType.RestService && e.Name == "ExchangeRateService"))
-                    //    session.Overrides.OverrideRestServiceRootUrl("ExchangeRateService", "https://api.exchangeratesapi.io");
+                    //session.Overrides.OverrideRestServiceRootUrl("ExchangeRateService", "https://api.exchangeratesapi.io");
 
                     //Step 4 - Pass Data
                     Entity entity;
@@ -79,7 +75,7 @@ namespace IntegrationTrainingSamples.RuleEngines
                 RuleApplicationReference ruleAppRef = new CatalogRuleApplicationReference(catalog.Url, ruleAppName, catalog.Username, catalog.Password, label);
 
                 //Step 2 - Create RuleSession
-                using (var session = new RuleSession(ruleApplicationReference: ruleAppRef))
+                using (var session = new RuleSession(ruleAppRef))
                 {
                     //Step 3 - Define Execution Settings (optional)
                     session.Settings.LogOptions = EngineLogOptions.SummaryStatistics;
