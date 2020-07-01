@@ -36,10 +36,7 @@ namespace IntegrationTrainingSamples
         #region Variables and Startup
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public string _catalogServiceUri = "";
-        private string _catalogUsername = "";
-        private string _catalogPassword = "";
-        private IrCatalogConnectionSettings _catalogSettings = null;
+        private IrCatalogConnectionSettings _catalog = null;
         private WebServiceHost _host;
 
         static void Main(string[] args)
@@ -145,14 +142,11 @@ namespace IntegrationTrainingSamples
         {
             try
             {
-                _catalogServiceUri = ConfigurationManager.AppSettings["CatalogUrl"];
-                _catalogUsername = ConfigurationManager.AppSettings["CatalogUsername"];
-                _catalogPassword = ConfigurationManager.AppSettings["CatalogPassword"];
-                _catalogSettings = new IrCatalogConnectionSettings()
+                _catalog = new IrCatalogConnectionSettings()
                 {
-                    Url = _catalogServiceUri,
-                    Username = _catalogUsername,
-                    Password = _catalogPassword
+                    Url = ConfigurationManager.AppSettings["CatalogUrl"],
+                    Username = ConfigurationManager.AppSettings["CatalogUsername"],
+                    Password = ConfigurationManager.AppSettings["CatalogPassword"]
                 };
             }
             catch (Exception ex)
@@ -567,13 +561,13 @@ namespace IntegrationTrainingSamples
         private void PreCompile()
         {
             Console.WriteLine("Compiling MultiplicationApp...");
-            var ruleAppRef = new CatalogRuleApplicationReference(_catalogServiceUri, "MultiplicationApp", _catalogUsername, _catalogPassword);
+            var ruleAppRef = GetCatalogRuleApp("MultiplicationApp");
             ruleAppRef.Compile(CacheRetention.AlwaysRetain);
             Console.WriteLine("Compiling MortgageCalculator...");
-            var ruleAppRef1 = new CatalogRuleApplicationReference(_catalogServiceUri, "MortgageCalculator", _catalogUsername, _catalogPassword);
+            var ruleAppRef1 = GetCatalogRuleApp("MortgageCalculator");
             ruleAppRef1.Compile(CacheRetention.FromWeight(1000));
             Console.WriteLine("Compiling Werewolf...");
-            var ruleAppRef2 = new CatalogRuleApplicationReference(_catalogServiceUri, "Werewolf", _catalogUsername, _catalogPassword);
+            var ruleAppRef2 = GetCatalogRuleApp("Werewolf");
             ruleAppRef2.Compile();
         }
         #endregion
@@ -581,9 +575,9 @@ namespace IntegrationTrainingSamples
         #region List Demos
         public void ListRuleApps()
         {
-            Console.WriteLine("Rule Apps contained in the catalog located at " + _catalogServiceUri);
+            Console.WriteLine("Rule Apps contained in the catalog located at " + _catalog.Url);
 
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
             foreach (var ruleApp in catCon.GetAllRuleApps())
             {
                 var ruleAppDefInfo = ruleApp.Key;
@@ -596,7 +590,7 @@ namespace IntegrationTrainingSamples
         {
             Console.WriteLine("RuleSets contained in the " + ruleAppName + " Rule App:");
             
-            var ruleApp = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppName, _catalogUsername, _catalogPassword, "LIVE");
+            var ruleApp = new CatalogRuleApplicationReference(_catalog.Url, ruleAppName, _catalog.Username, _catalog.Password, "LIVE");
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
 
             //var entityRuleSetDictionary = ruleAppDef.Entities.ToList<EntityDef>().ToDictionary(k => k.Name, v => v.GetAllRuleSets().Select(rs => rs.Name).ToList());
@@ -775,7 +769,7 @@ namespace IntegrationTrainingSamples
 
         private void ListRuleDetails()
         {
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
             foreach (var ruleApp in catCon.GetAllRuleApps())
             {
                 var ruleAppDefInfo = ruleApp.Key;
@@ -787,7 +781,7 @@ namespace IntegrationTrainingSamples
                 Console.WriteLine($"");
                 Console.WriteLine($"Rule App: {ruleAppDefInfo.Name} v{ruleAppDefInfo.PublicRevision}");
 
-                var ruleAppRef = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppDefInfo.Name, _catalogUsername, _catalogPassword, ruleAppDefInfo.PublicRevision);
+                var ruleAppRef = new CatalogRuleApplicationReference(_catalog.Url, ruleAppDefInfo.Name, _catalog.Username, _catalog.Password, ruleAppDefInfo.PublicRevision);
                 var ruleAppDef = ruleAppRef.GetRuleApplicationDef();
 
                 foreach (EntityDef entity in ruleAppDef.Entities)
@@ -811,7 +805,7 @@ namespace IntegrationTrainingSamples
         {
             Console.WriteLine("Perparing to add new Rule Application to the Catalog...");
             var newRuleAppDef = RuleApplicationDef.Load(@"..\..\..\RuleApps\NewCheckinTest.ruleappx");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
             
             //This will throw an exception if a Rule App already exists with the same GUID
             catCon.CreateRuleApplication(newRuleAppDef, "Created new catalog entry for " + newRuleAppDef.Name);
@@ -823,7 +817,7 @@ namespace IntegrationTrainingSamples
         {
             Console.WriteLine("Perparing to Update Rule Application in the Catalog...");
             var updatedRuleAppDef = RuleApplicationDef.Load(@"..\..\..\RuleApps\NewCheckinTest.ruleappx");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
 
             // OPTION 1 : If the same file is consistently used, you can simply check out and back in with the same file - the GUID is used for lookup
             catCon.CheckoutRuleApplicationAndSchema(updatedRuleAppDef, "Automated Update");
@@ -839,7 +833,7 @@ namespace IntegrationTrainingSamples
         private void CheckOutRuleApp()
         {
             Console.WriteLine("Checking out MultiplicationApp...");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
             var appRef = catCon.GetRuleAppRef("MultiplicationApp");
             var appDef = catCon.GetLatestRuleAppRevision(appRef.Guid);
             catCon.CheckoutRuleApplication(appDef, true, "Testing code-based catalog interactions");
@@ -851,7 +845,7 @@ namespace IntegrationTrainingSamples
         private void ModifyRuleAppWithCheckin()
         {
             Console.WriteLine("Checking out MultiplicationApp...");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
             var appRef = catCon.GetRuleAppRef("MultiplicationApp");
             var appDef = catCon.GetLatestRuleAppRevision(appRef.Guid);
             catCon.CheckoutRuleApplication(appDef, true, "Updating data connections for new environment");
@@ -871,7 +865,7 @@ namespace IntegrationTrainingSamples
         private void UndoCheckout()
         {
             Console.WriteLine("Undoing Checkout of MultiplicationApp...");
-            var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn);
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
             var appRef = catCon.GetRuleAppRef("MultiplicationApp");
             var appDef = catCon.GetLatestRuleAppRevision(appRef.Guid);
             catCon.UndoRuleAppCheckout(appDef);
@@ -882,9 +876,9 @@ namespace IntegrationTrainingSamples
         {
             List<string> results = new List<string>();
 
-            Console.WriteLine($"Searching for '{searchQuery}' in the {field} from catalog located at {_catalogServiceUri}");
+            Console.WriteLine($"Searching for '{searchQuery}' in the {field} from catalog located at {_catalog.Url}");
 
-            using (var catCon = new RuleCatalogConnection(new Uri(_catalogServiceUri), TimeSpan.FromSeconds(60), _catalogUsername, _catalogPassword, RuleCatalogAuthenticationType.BuiltIn))
+            using (var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn))
             {
                 foreach (var ruleApp in catCon.GetAllRuleApps())
                 {
@@ -895,7 +889,7 @@ namespace IntegrationTrainingSamples
                     {
                         Console.WriteLine($"Searching Rule App {ruleAppDefInfo.Name} v{ruleAppDefInfo.PublicRevision} {ruleAppInfo.LastLabelName}");
 
-                        var ruleAppRef = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppDefInfo.Name, _catalogUsername, _catalogPassword, ruleAppDefInfo.PublicRevision);
+                        var ruleAppRef = new CatalogRuleApplicationReference(_catalog.Url, ruleAppDefInfo.Name, _catalog.Username, _catalog.Password, ruleAppDefInfo.PublicRevision);
                         var ruleAppDef = ruleAppRef.GetRuleApplicationDef();
                         foreach (var entity in ((IEnumerable<EntityDef>)ruleAppDef.Entities))
                         {
@@ -1023,7 +1017,7 @@ namespace IntegrationTrainingSamples
         }
         private void PromoteRuleApp(string ruleAppName, string label, string destinationCatUrl, string destinationCatUser, string destinationCatPass)
         {
-            var sourceRuleApp = new CatalogRuleApplicationReference(_catalogServiceUri, ruleAppName, _catalogUsername, _catalogPassword, label);
+            var sourceRuleApp = new CatalogRuleApplicationReference(_catalog.Url, ruleAppName, _catalog.Username, _catalog.Password, label);
             var sourceRuleAppDef = sourceRuleApp.GetRuleApplicationDef();
 
             var destCatCon = new RuleCatalogConnection(new Uri(destinationCatUrl), TimeSpan.FromSeconds(60), destinationCatUser, destinationCatPass, RuleCatalogAuthenticationType.BuiltIn);
@@ -1035,7 +1029,7 @@ namespace IntegrationTrainingSamples
         {
             Console.WriteLine();
             Console.WriteLine("Requesting compiled JS library from Distribution Service...");
-            var ruleApp = new CatalogRuleApplicationReference(_catalogServiceUri, "SalesforceRuleApp", _catalogUsername, _catalogPassword, "LIVE");
+            var ruleApp = new CatalogRuleApplicationReference(_catalog.Url, "SalesforceRuleApp", _catalog.Username, _catalog.Password, "LIVE");
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
             var js = CallDistributionServiceAsync(ruleAppDef, "https://api.distribution.inrule.com/", ConfigurationManager.AppSettings["irDistributionKey"]).Result;
             Console.WriteLine("Compiled Javascript Rule App:");
@@ -1100,7 +1094,7 @@ namespace IntegrationTrainingSamples
         {
             try
             {
-                var ruleApp = new CatalogRuleApplicationReference(_catalogServiceUri, "MortgageCalculator", _catalogUsername, _catalogPassword, "LIVE");
+                var ruleApp = new CatalogRuleApplicationReference(_catalog.Url, "MortgageCalculator", _catalog.Username, _catalog.Password, "LIVE");
                 using (var session = new RuleSession(ruleApp))
                 {
                     session.Settings.MetricLogger = new ConsoleMetricLogger();
@@ -1185,7 +1179,7 @@ namespace IntegrationTrainingSamples
         {
             try
             {
-                RuleApplicationReference ruleAppRef = new CatalogRuleApplicationReference(catalog.Url, "MultiplicationApp", catalog.Username, catalog.Password);
+                RuleApplicationReference ruleAppRef = GetCatalogRuleApp("MultiplicationApp");
 
                 using (var session = new RuleSession(ruleAppRef))
                 {
@@ -1228,7 +1222,7 @@ namespace IntegrationTrainingSamples
         {
             try
             {
-                RuleApplicationReference ruleAppRef = new CatalogRuleApplicationReference(_catalogSettings.Url, "MortgageCalculator", _catalogSettings.Username, _catalogSettings.Password);
+                RuleApplicationReference ruleAppRef = GetCatalogRuleApp("MortgageCalculator");
 
                 using (var session = new RuleSession(ruleAppRef))
                 {
@@ -1288,7 +1282,7 @@ namespace IntegrationTrainingSamples
                 if (addLogOptions)
                     logOptions = EngineLogOptions.SummaryStatistics | EngineLogOptions.DetailStatistics;
 
-                IrSDKClient.InvokeEngine(_catalogSettings, "MultiplicationApp", "MultiplicationProblem", problem, engineLogOptions: logOptions, log: false);
+                IrSDKClient.InvokeEngine(_catalog, "MultiplicationApp", "MultiplicationProblem", problem, engineLogOptions: logOptions, log: false);
 
                 return problem.Result;
             }
@@ -1300,7 +1294,12 @@ namespace IntegrationTrainingSamples
         }
         private string IrSDKApplyJson(string ruleApp, string entityName, string entityState)
         {
-            return IrSDKClient.InvokeEngine(_catalogSettings, ruleApp, entityName, entityState, log: false);
+            return IrSDKClient.InvokeEngine(_catalog, ruleApp, entityName, entityState, log: false);
+        }
+        private RuleApplicationReference GetCatalogRuleApp(string ruleAppName)
+        {
+            return new CatalogRuleApplicationReference(_catalog.Url, ruleAppName, _catalog.Username, _catalog.Password);
+
         }
         #endregion
 
@@ -1319,7 +1318,7 @@ namespace IntegrationTrainingSamples
             Console.WriteLine("Performing irSDK Execute Rule");
             try
             {
-                var ruleAppRef = new CatalogRuleApplicationReference(_catalogServiceUri, "MultiplicationApp", "admin", "password");
+                var ruleAppRef = GetCatalogRuleApp("MultiplicationApp");
                 var problem = new MultiplicationProblem()
                 {
                     FactorA = factorA,
