@@ -28,6 +28,9 @@ using InRule.Authoring.BusinessLanguage.Tokens;
 using InRule.Repository.Decisions;
 using InRule.Repository.EndPoints;
 using InRule.Repository.Vocabulary;
+using System.Diagnostics;
+using InRule.Runtime.Testing.Extensions;
+using System.IO;
 
 namespace IntegrationTrainingSamples
 {
@@ -55,6 +58,7 @@ namespace IntegrationTrainingSamples
                 Console.WriteLine("   1.1: Limit Rule App cache size");
                 Console.WriteLine("   1.2: Reset Rule App cache to Default");
                 Console.WriteLine("   1.3: Pre-Compile Rule App");
+                Console.WriteLine("   1.4: Calculate Estimated Cache Consumption");
                 Console.WriteLine("2: List Rule Apps from Catalog");
                 Console.WriteLine("   2.1: List Rule Sets");
                 Console.WriteLine("   2.2: List Business Language Logic");
@@ -63,6 +67,8 @@ namespace IntegrationTrainingSamples
                 Console.WriteLine("   3.2: Search Catalog for Text 'Set'");
                 Console.WriteLine("4: Build and execute in-memory Rule App");
                 Console.WriteLine("5: Execute Regression Test Suite");
+                Console.WriteLine("   5.1: Create and Execute Regression Test Suite");
+                Console.WriteLine("   5.2: Execute RES Load Test");
                 Console.WriteLine("6: Retrieve IrJS from Distribution Service");
                 Console.WriteLine("7: Run with Metrics Logger attached");
                 Console.WriteLine("8: Execute a Decision");
@@ -85,6 +91,9 @@ namespace IntegrationTrainingSamples
                         break;
                     case "1.3":
                         program.PreCompile();
+                        break;
+                    case "1.4":
+                        program.TestMemoryConsumption(3);
                         break;
                     case "2":
                         program.ListRuleApps();
@@ -110,7 +119,14 @@ namespace IntegrationTrainingSamples
                         break;
                     case "5":
                         program.RunTestSuite(@"..\..\..\RuleApps\MultiplicationApp.ruleappx",
-                                             @"..\..\..\RuleApps\MultiplicationApp Test Suite.testsuite");
+                                                         @"..\..\..\RuleApps\MultiplicationApp Test Suite.testsuite");
+                        break;
+                    case "5.1":
+                        program.CreateAndRunTestSuite(@"..\..\..\RuleApps\MultiplicationApp.ruleappx", @"C:\Users\DanGardiner\Documents\test.testsuite", 
+                                                        "MultiplicationProblem", "{ FactorA:5, FactorB:6 }", "{ FactorA:5, FactorB:6, Result:30 }");
+                        break;
+                    case "5.2":
+                        program.RunRuleRequestLoadTest().Result;
                         break;
                     case "6":
                         program.RetrieveIrJSFromDistributionService();
@@ -514,7 +530,7 @@ namespace IntegrationTrainingSamples
         #endregion
         #endregion
 
-        #region Cold Start and Caching Demos
+        #region Cold Start and Rule App Caching Demos
         private void ColdStartDemo()
         {
             var time1 = DateTime.UtcNow;
@@ -537,7 +553,7 @@ namespace IntegrationTrainingSamples
             IrSDKApplyJson("MortgageCalculator", "Mortgage", "{'LoanInfo': { 'Principal' : 400000, 'APR' : 3.1, 'TermInYears' : 30 }}");
             var time7 = DateTime.UtcNow;
             Console.WriteLine($"Run 6 completed in {(time7 - time6).TotalMilliseconds}ms (cold start) with cache size of {RuleSession.RuleApplicationCache.Count}.  Running another different Rule App...");
-            IrSDKApplyJson("Werewolf", "WerewolfEncounter", "{'ZipCode': '60613', 'MilesFromGraveyard': 5}");
+            IrSDKApplyJson("InvoiceSample", "Invoice", "{'LineItems': [ { 'ProductID':1, 'Quantity':5 },{ 'ProductID':8, 'Quantity':5 } ] }");
             var time8 = DateTime.UtcNow;
             Console.WriteLine($"Run 7 completed in {(time8 - time7).TotalMilliseconds}ms (cold start) with cache size of {RuleSession.RuleApplicationCache.Count}.  Running original Rule App...");
             IrSDKApplyMultiplication(10, 10, false);
@@ -566,9 +582,107 @@ namespace IntegrationTrainingSamples
             Console.WriteLine("Compiling MortgageCalculator...");
             var ruleAppRef1 = GetCatalogRuleApp("MortgageCalculator");
             ruleAppRef1.Compile(CacheRetention.FromWeight(1000));
-            Console.WriteLine("Compiling Werewolf...");
-            var ruleAppRef2 = GetCatalogRuleApp("Werewolf");
+            Console.WriteLine("Compiling InvoiceSample...");
+            var ruleAppRef2 = GetCatalogRuleApp("InvoiceSample", null);
             ruleAppRef2.Compile();
+        }
+
+        private List<RuleAppCacheComplilationStatistics> TestMemoryConsumption(int pastRevisionsToLoadPerRuleApp)
+        {
+            // Get InRule bits loaded into memory
+            var dummyRuleDef = new RuleApplicationDef();
+            var dummyRuleApp = new InMemoryRuleApplicationReference(dummyRuleDef);
+            dummyRuleApp.Compile();
+
+            // Get test data and prepare AppDomain Cache
+            var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
+            var ruleApps = catCon.GetRuleAppSummary(false);
+            RuleSession.RuleApplicationCache.ConfigureCachePolicy(new DefaultRuleApplicationCachePolicy((pastRevisionsToLoadPerRuleApp * ruleApps.Count()) + 10));
+            var compilationTimer = new Stopwatch();
+
+            // Reset statistics
+            GC.Collect();
+            var workingM = Process.GetCurrentProcess().WorkingSet64;
+            var ruleAppsLoaded = 0;
+            var statistics = new List<RuleAppCacheComplilationStatistics>();
+
+            // Option 1: Iterate through the most recent n revisions for each RuleApp in the Catalog
+            foreach (var ruleApp in ruleApps)
+            {
+                for (int rev = ruleApp.Revisions; rev > Math.Max(ruleApp.Revisions - pastRevisionsToLoadPerRuleApp, 0); rev--)
+                {
+                    var ruleAppRef = new CatalogRuleApplicationReference(_catalog.Url, ruleApp.Name, _catalog.Username, _catalog.Password, rev);
+
+                    var thisStat = TestRuleAppCompilation(ruleAppRef, ref workingM, compilationTimer);
+                    statistics.Add(thisStat);
+                    ruleAppsLoaded++;
+                }
+            }
+            // Option 2:  You can run this on an explicit set of CatalogRuleApplicationReference or FileSystemRuleApplicationReference objects
+            //TestRuleAppCompilation(new FileSystemRuleApplicationReference(@"C:\Users\DanGardiner\myRuleApp.ruleappx"), ref workingM, compilationTimer);
+
+            Console.WriteLine("Run Complete.  CSV Data:");
+            Console.WriteLine();
+            Console.WriteLine(RuleAppCacheComplilationStatistics.CSVHeader);
+            foreach (var stat in statistics)
+                Console.WriteLine(stat.ToCSV());
+            return statistics;
+        }
+        private RuleAppCacheComplilationStatistics TestRuleAppCompilation(RuleApplicationReference ruleAppRef, ref long currentWorkingMemory, Stopwatch compilationTimer)
+        {
+            //Perform the compilation
+            compilationTimer.Start();
+            ruleAppRef.Compile(CacheRetention.Default, CompileSettings.Create(EngineLogOptions.None));
+            compilationTimer.Stop();
+
+            // Collect and report metrics
+            var currentProcess = Process.GetCurrentProcess();
+            GC.Collect();
+            var thisStat = new RuleAppCacheComplilationStatistics()
+            {
+                WorkingMemory = (currentProcess.WorkingSet64 - currentWorkingMemory) / 1000000.0,
+                CompilationMS = compilationTimer.ElapsedMilliseconds
+            };
+            if (ruleAppRef is CatalogRuleApplicationReference crr)
+            {
+                thisStat.Revision = crr.RuleApplicationVersion.Revision ?? -1;
+                thisStat.RuleAppName = crr.RuleApplicationDescriptor.Name;
+            }
+            else
+            {
+                thisStat.RuleAppName = ((RuleApplicationDef)ruleAppRef.GetRuleApplicationDef()).Name;
+            }
+
+            Console.WriteLine(thisStat.ToString());
+
+            // Reset current values before running next iteration of the loop
+            compilationTimer.Reset();
+            currentWorkingMemory = currentProcess.WorkingSet64;
+
+            return thisStat;
+        }
+        class RuleAppCacheComplilationStatistics
+        {
+            public string RuleAppName;
+            public int Revision;
+            public double WorkingMemory;
+            public long CompilationMS;
+
+            public override string ToString()
+            {
+                return $"Loaded " +
+                       $"{RuleAppName}".Substring(0, Math.Min(20, RuleAppName.Length)).PadLeft(20) +
+                       $"v{Revision}".PadLeft(5) +
+                       $" into cache with incremental memory: " +
+                       $"{(Math.Round(Math.Max(WorkingMemory, 0), 2)).ToString("##0.00")} MB. ".PadLeft(10) +
+                       $"Compilation took " +
+                       $"{CompilationMS} ms.".PadLeft(10);
+            }
+            public const string CSVHeader = "RuleApp Name,RuleApp Revision,Cached Memory Consumed (MB),Compilation Time (MS)";
+            public string ToCSV()
+            {
+                return $"{RuleAppName},{Revision},{Math.Round(Math.Max(WorkingMemory, 0), 3)},{CompilationMS}";
+            }
         }
         #endregion
 
@@ -648,6 +762,18 @@ namespace IntegrationTrainingSamples
 
                     if (!string.IsNullOrEmpty(dataElement.Comments))
                         Console.WriteLine($"    Description: {dataElement.Comments}");
+
+                    if (dataElement is RestOperationDef rod)
+                    {
+                        //rod.UriPrototype = ""/latest?base=USD"";
+                    }
+                }
+                foreach (EndPointDef dataElement in ruleAppDef.EndPoints)
+                {
+                    if (dataElement is RestServiceDef red)
+                    {
+                        //red.RootUrl= "https://YourNewUrlHere.com/service.svc";
+                    }
                 }
             }
         }
@@ -1013,14 +1139,110 @@ namespace IntegrationTrainingSamples
             return ruleApp;
         }
 
+        public void CreateAndRunTestSuite(string ruleAppFilePath, string pathToSaveTestSuite, string rootEntityName, string initialJson, string finalJson)
+        {
+            var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
+            var ruleAppDef = ruleApp.GetRuleApplicationDef();
+            var provider = new ZipFileTestSuitePersistenceProvider(pathToSaveTestSuite);
+
+            // Create and add Settings
+            var settings = new TestSuiteSettingsDef();
+            settings.IncludeRuleExecutionLog = false;
+            settings.IncludeXmlRuleTrace = false;
+            settings.Name = ruleAppDef.Name + " Test";
+            settings.RuleAppName = ruleAppDef.Name;
+            settings.RuleAppGuid = ruleAppDef.Guid;
+            provider.SaveTestSuiteSettingsDef(settings);
+
+            // Create folders
+            var dataFolder = new FolderDef();
+            dataFolder.FolderType = FolderDef.FolderDefType.DataFolder;
+            dataFolder.DisplayName = "Data";
+            dataFolder.IsRootFolder = true;
+            var testFolder = new FolderDef();
+            testFolder.FolderType = FolderDef.FolderDefType.TestFolder;
+            testFolder.DisplayName = "Tests";
+            testFolder.IsRootFolder = true;
+
+            // Create and add initial and final data state objects
+            var initialDataState = new DataStateDef();
+            var finalDataState = new DataStateDef();
+            using (var rs = new RuleSession(ruleApp))
+            {
+                // Final state (TestScenario) needs to be created from a fresh RuleSession, otherwise the state will include all entities in the RuleSession
+                var finalEntity = rs.CreateEntity(rootEntityName, finalJson, EntityStateType.Json);
+                finalDataState.RootEntityName = rootEntityName;
+                finalDataState.DisplayName = "Final State";
+                finalDataState.DataStateType = DataStateType.TestScenario; // Final state needs to be a TestScenario, not StateXML
+                using (MemoryStream testScenario = new MemoryStream())
+                {
+                    rs.SaveState(testScenario, true, finalEntity);
+                    testScenario.Position = 0;
+                    finalDataState.LoadTestScenario(testScenario);
+                }
+                provider.SaveDataStateDef(finalDataState);
+                dataFolder.Members.Add(finalDataState);
+
+                // This state is XML-based, so we can re-use the RuleSession and not have an issue because we're not loading a TestScenario from the RuleSession
+                var initialEntity = rs.CreateEntity(rootEntityName, initialJson, EntityStateType.Json);
+                initialDataState.RootEntityName = rootEntityName;
+                initialDataState.DisplayName = "Initial State";
+                initialDataState.StateXml = initialEntity.GetXml();
+                initialDataState.DataStateType = DataStateType.EntityState;
+                provider.SaveDataStateDef(initialDataState);
+                dataFolder.Members.Add(initialDataState);
+            }
+            provider.SaveFolderDef(dataFolder);
+
+            // Create and add Test
+            var testContext = new TestContextDef();
+            testContext.RootContextName = rootEntityName;
+            testContext.ExecutionType = TestExecutionType.ApplyRules;
+            var currentTest = new TestDef(testContext);
+            currentTest.TestType = TestType.Compare;
+            currentTest.DisplayName = "My Test";
+            currentTest.DataStates.Add(new DataStateMappingDef(initialDataState));
+            currentTest.ExpectedDataStates.Add(new DataStateMappingDef(finalDataState));
+            provider.SaveTestDef(currentTest);
+            testFolder.Members.Add(currentTest);
+            provider.SaveFolderDef(testFolder);
+
+            // Load into TestSuite
+            var suite = TestSuiteDef.LoadFrom(provider);
+            suite.ActiveRuleApplicationDef = ruleAppDef;
+
+            // Run Test
+            TestResultCollection results;
+            using (TestingSessionManager manager = new TestingSessionManager(new InProcessConnectionFactory()))
+            {
+                var session = new RegressionTestingSession(manager, suite);
+                results = session.ExecuteAllTests();
+            }
+
+            foreach (TestResult result in results)
+            {
+                if (result.Passed)
+                    Console.WriteLine($"Test passed: {result.TestDef.DisplayName}");
+                else
+                {
+                    Console.WriteLine($"Test failed: {result.TestDef.DisplayName}");
+                    foreach (var failedAssertionResult in result.AssertionResults.Where(ar => ar.Passed == false))
+                    {
+                        Console.WriteLine($"    {failedAssertionResult.Target} was {failedAssertionResult.ActualValue}, expected value {failedAssertionResult.ExpectedValue}");
+                    }
+                }
+            }
+        }
+
         public void RunTestSuite(string ruleAppFilePath, string testSuiteFilePath)
         {
             var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
 
-            var suite = TestSuiteDef.LoadFrom(new ZipFileTestSuitePersistenceProvider(testSuiteFilePath));
+            var provider = new ZipFileTestSuitePersistenceProvider(testSuiteFilePath);
+            var suite = TestSuiteDef.LoadFrom(provider);
             suite.ActiveRuleApplicationDef = ruleAppDef;
-        
+
             TestResultCollection results;
             using (TestingSessionManager manager = new TestingSessionManager(new InProcessConnectionFactory()))
             {
@@ -1178,6 +1400,60 @@ namespace IntegrationTrainingSamples
         #endregion
 
         #region Execution Demo Methods
+        public async Task<string> RunRuleRequestLoadTest()
+        {
+            var tasks = new List<Task<string>>();
+            var totalRequests = 1000;
+            var totalRequestsRemaining = totalRequests;
+            var batchSize = 100;
+
+            var startTime = DateTime.Now;
+
+            while(tasks.Count <  batchSize)
+            {
+                totalRequestsRemaining--;
+                tasks.Add(RunRuleRequest());
+            }
+
+            while (totalRequests > 0)
+            {
+                await Task.WhenAny(tasks);
+                totalRequestsRemaining--;
+                while (tasks.Count < batchSize)
+                {
+                    totalRequestsRemaining--;
+                    tasks.Add(RunRuleRequest());
+                }
+            }
+
+            await Task.WhenAll(tasks);
+
+            return $"Completed in {(DateTime.Now - startTime).TotalMilliseconds}";
+        }
+
+        public async Task<string> RunRuleRequest()
+        {
+            string oobRuleServiceUrl = ConfigurationManager.AppSettings["RexUrl"] + "/HttpService.svc/ApplyRules";
+            string requestBody = "{\"RuleApp\":{\"RepositoryRuleAppRevisionSpec\":{\"RuleApplicationName\":\"MultiplicationApp\"}},\"EntityName\":\"MultiplicationProblem\",\"EntityState\":\"{'FactorA': 12.4, 'FactorB': 3.1}\"}";
+            string requestUrl = oobRuleServiceUrl;
+            var startTime = DateTime.Now;
+            using (HttpClient client = new HttpClient())
+            {
+                StringContent content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                await client.PostAsync(requestUrl, content)
+                            .ContinueWith(r =>
+                            {
+                                //r.Result.Content.ReadAsStringAsync().Result
+                                Console.WriteLine($"Rule execution completed with status {r.Status} in {(DateTime.Now - startTime).TotalMilliseconds}");
+                            })
+                            .ConfigureAwait(false);
+            }
+            var elapsedTime = (DateTime.Now - startTime).TotalMilliseconds;
+            Console.WriteLine($"Elapsed time: {elapsedTime}");
+            return $"Elapsed time: {elapsedTime}";
+        }
+
+
         private async Task<MultiplicationProblem> ApplyRulesViaRex_Denormalized(MultiplicationProblem problem)
         {
             string OOBRuleServiceUrl = ConfigurationManager.AppSettings["RexUrl"] + "/HttpService.svc/";
@@ -1269,6 +1545,8 @@ namespace IntegrationTrainingSamples
                     info.Fields["APR"].SetValue(apr);
                     info.Fields["TermInYears"].SetValue(termInYears);
                     var entityDecision = session.CreateDecision("MortgageSummaryFromEntity");
+                    //Another option - added in 5.6.1
+                    //entityDecision.AssignInputs(new DecisionInput("Info", info));
                     DecisionResult entityResult = entityDecision.Execute(new DecisionInput("Info", info));
 
                     foreach (var notification in session.GetNotifications())
@@ -1324,10 +1602,9 @@ namespace IntegrationTrainingSamples
         {
             return IrSDKClient.InvokeEngine(_catalog, ruleApp, entityName, entityState, log: false);
         }
-        private RuleApplicationReference GetCatalogRuleApp(string ruleAppName)
+        private RuleApplicationReference GetCatalogRuleApp(string ruleAppName, string label = "LIVE")
         {
-            return new CatalogRuleApplicationReference(_catalog.Url, ruleAppName, _catalog.Username, _catalog.Password);
-
+            return new CatalogRuleApplicationReference(_catalog.Url, ruleAppName, _catalog.Username, _catalog.Password, label);
         }
         #endregion
 
