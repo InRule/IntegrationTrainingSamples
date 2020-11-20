@@ -126,7 +126,7 @@ namespace IntegrationTrainingSamples
                                                         "MultiplicationProblem", "{ FactorA:5, FactorB:6 }", "{ FactorA:5, FactorB:6, Result:30 }");
                         break;
                     case "5.2":
-                        program.RunRuleRequestLoadTest().Result;
+                        var asyncResult = program.RunRuleRequestLoadTest().Result;
                         break;
                     case "6":
                         program.RetrieveIrJSFromDistributionService();
