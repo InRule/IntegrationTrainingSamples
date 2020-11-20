@@ -31,6 +31,10 @@ using InRule.Repository.Vocabulary;
 using System.Diagnostics;
 using InRule.Runtime.Testing.Extensions;
 using System.IO;
+using System.Text.RegularExpressions;
+using InRule.Repository.DecisionTables;
+using InRule.Repository.ValueLists;
+using System.Data;
 
 namespace IntegrationTrainingSamples
 {
@@ -1141,13 +1145,16 @@ namespace IntegrationTrainingSamples
 
         public void CreateAndRunTestSuite(string ruleAppFilePath, string pathToSaveTestSuite, string rootEntityName, string initialJson, string finalJson)
         {
+            if (File.Exists(pathToSaveTestSuite))
+                File.Delete(pathToSaveTestSuite);
+
             var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
             var provider = new ZipFileTestSuitePersistenceProvider(pathToSaveTestSuite);
 
             // Create and add Settings
             var settings = new TestSuiteSettingsDef();
-            settings.IncludeRuleExecutionLog = false;
+            settings.IncludeRuleExecutionLog = true; // Allows for code coverage information to be calculated
             settings.IncludeXmlRuleTrace = false;
             settings.Name = ruleAppDef.Name + " Test";
             settings.RuleAppName = ruleAppDef.Name;
@@ -1198,13 +1205,25 @@ namespace IntegrationTrainingSamples
             var testContext = new TestContextDef();
             testContext.RootContextName = rootEntityName;
             testContext.ExecutionType = TestExecutionType.ApplyRules;
-            var currentTest = new TestDef(testContext);
-            currentTest.TestType = TestType.Compare;
-            currentTest.DisplayName = "My Test";
-            currentTest.DataStates.Add(new DataStateMappingDef(initialDataState));
-            currentTest.ExpectedDataStates.Add(new DataStateMappingDef(finalDataState));
-            provider.SaveTestDef(currentTest);
-            testFolder.Members.Add(currentTest);
+
+            var compareTest = new TestDef(testContext);
+            compareTest.TestType = TestType.Compare;
+            compareTest.DisplayName = "My Comparison Test";
+            compareTest.DataStates.Add(new DataStateMappingDef(initialDataState));
+            compareTest.ExpectedDataStates.Add(new DataStateMappingDef(finalDataState));
+            provider.SaveTestDef(compareTest);
+            testFolder.Members.Add(compareTest);
+
+            var perfTest = new TestDef(testContext);
+            perfTest.TestType = TestType.Performance;
+            perfTest.DisplayName = "My Performance Test";
+            perfTest.DataStates.Add(new DataStateMappingDef(initialDataState));
+            perfTest.Iterations = 5;
+            perfTest.PerformWarmup = true;
+            perfTest.IncludeDetailStatistics = true; // Allows for the Performance Report to be generated
+            provider.SaveTestDef(perfTest);
+            testFolder.Members.Add(perfTest);
+
             provider.SaveFolderDef(testFolder);
 
             // Load into TestSuite
@@ -1221,8 +1240,31 @@ namespace IntegrationTrainingSamples
 
             foreach (TestResult result in results)
             {
-                if (result.Passed)
+                if (result.TestDef.TestType == TestType.Performance)
+                {
+                    var totalDuration = new TimeSpan(0);
+                    totalDuration = result.IterationTestResults.Aggregate(totalDuration, (current, iterationTestResult) => current.Add(iterationTestResult.ClockRunningTime));
+                    var averageDuration = Math.Round(totalDuration.TotalMilliseconds / result.TestDef.Iterations, 3);
+                    Console.WriteLine($"Test completed {result.TestDef.DisplayName}: Average duration {averageDuration} ms ({result.TestDef.Iterations} iteration(s))");
+
+                    /* This logic writes out and opens the performance report
+                    var middleResult = result.IterationTestResults[(result.TestDef.Iterations + 1) / 2];
+                    var performanceReportHtml = middleResult.ExecutionLog.GetHtml();
+                    if (!string.IsNullOrWhiteSpace(performanceReportHtml))
+                    {
+                        string tempFolderBasePath = Path.GetTempPath() + @"InRuleIntegrationTraining\";
+                        Directory.CreateDirectory(tempFolderBasePath);
+                        string tempFilePath = tempFolderBasePath + Path.GetRandomFileName() + ".html";
+                        File.WriteAllText(tempFilePath, performanceReportHtml);
+                        Console.WriteLine($"Opening performance report for iteration {(result.TestDef.Iterations + 1) / 2}");
+                        Process.Start(tempFilePath);
+                    }
+                    //*/
+                }
+                else if (result.Passed)
+                {
                     Console.WriteLine($"Test passed: {result.TestDef.DisplayName}");
+                }
                 else
                 {
                     Console.WriteLine($"Test failed: {result.TestDef.DisplayName}");
@@ -1232,9 +1274,10 @@ namespace IntegrationTrainingSamples
                     }
                 }
             }
-        }
 
-        public void RunTestSuite(string ruleAppFilePath, string testSuiteFilePath)
+            CalculateRuleTestCoverage(ruleAppDef.Entities[rootEntityName], results.Where(r => r.RuleExecutionLog != null).Select(r => r.RuleExecutionLog));
+        }
+        private void RunTestSuite(string ruleAppFilePath, string testSuiteFilePath)
         {
             var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
@@ -1252,8 +1295,17 @@ namespace IntegrationTrainingSamples
 
             foreach(var result in results)
             {
-                if (result.Passed)
+                if (result.TestDef.TestType == TestType.Performance)
+                {
+                    var totalDuration = new TimeSpan(0);
+                    totalDuration = result.IterationTestResults.Aggregate(totalDuration, (current, iterationTestResult) => current.Add(iterationTestResult.ClockRunningTime));
+                    var averageDuration = Math.Round(totalDuration.TotalMilliseconds / result.TestDef.Iterations, 3);
+                    Console.WriteLine($"Test completed {result.TestDef.DisplayName}: Average duration {averageDuration} ms ({result.TestDef.Iterations} iteration(s))");
+                }
+                else if (result.Passed)
+                {
                     Console.WriteLine($"Test passed: {result.TestDef.DisplayName}");
+                }
                 else
                 {
                     Console.WriteLine($"Test failed: {result.TestDef.DisplayName}");
@@ -1262,9 +1314,88 @@ namespace IntegrationTrainingSamples
                         Console.WriteLine($"    {failedAssertionResult.Target} was {failedAssertionResult.ActualValue}, expected value {failedAssertionResult.ExpectedValue}");
                     }
                 }
-
             }
         }
+        private void CalculateRuleTestCoverage(EntityDef rootEntity, IEnumerable<RuleExecutionLog> logs)
+        {
+            //Load list of all Rule IDs to be used for determining code coverage
+            List<string> untestedRules = new List<string>();
+            LoadAllRuleIdentifiers(rootEntity, untestedRules);
+            var totalElementCount = untestedRules.Count();
+
+            foreach (var log in logs)
+            {
+                //Update list of Rules that have been hit, to be used in code coverage metrics
+                foreach (var logMessage in log.AllMessages.Select(m => m.Description).Where(m => m.StartsWith("Action")))
+                {
+                    var entitySeparatorRegex = new Regex(@"[:]*[\d]*/");
+                    var path = logMessage.Substring(logMessage.IndexOf('\"') + 1).Split('\"')[0];
+                    path = entitySeparatorRegex.Replace(path, ".");
+
+                    var previouslyUntestedRule = untestedRules.FirstOrDefault(r => r == path);
+                    if (previouslyUntestedRule != null)
+                        untestedRules.Remove(previouslyUntestedRule);
+                }
+            }
+
+            //Display summary of code coverage
+            var untestedElementCount = untestedRules.Count();
+            var testedElementCount = totalElementCount - untestedElementCount;
+            var codeCoverage = Math.Round(testedElementCount / (double)totalElementCount * 100, 2);
+            Console.WriteLine($"Current tests cover {codeCoverage}% ({testedElementCount}/{totalElementCount}) of Rules");
+            if (untestedElementCount > 0)
+            {
+                Console.WriteLine("Elements not covered by a test:");
+                foreach (var untestedElement in untestedRules)
+                {
+                    Console.WriteLine("  " + untestedElement);
+                }
+            }
+        }
+        private void LoadAllRuleIdentifiers(EntityDef entity, List<string> ruleNames)
+        {
+            foreach (var element in entity.GetAllRuleElements().Where(e => e.RuleElementType != RuleElementType.RuleSet && e.RuleElementType != RuleElementType.RuleSetFolder))
+            {
+                if (element is DecisionTableDef dtd)
+                {
+                    var dtName = element.Name;
+                    //If it has the default name of DecisionTable1, it uses just DecisionTable, otherwise uses the proper name.  Based on reverse engineering, needs further testing
+                    if (dtName.StartsWith("DecisionTable"))
+                        dtName = "DecisionTable";
+
+                    var locationOfLastDot = element.AuthoringElementPath.LastIndexOf('.');
+                    var dtPath = element.AuthoringElementPath.Substring(0, locationOfLastDot) + "." + dtName + ".";
+
+                    foreach (ActionDimensionDef action in dtd.Actions)
+                    {
+                        int index = 1;
+                        foreach (ActionValueDef actionValue in action.ActionValues)
+                        {
+                            //This is weird and based on reverse engineering, needs further testing.
+                            var actionName = action.FieldName + "_" + index++;
+                            if (actionValue.RuleElement == null)
+                                actionName = actionValue.ActionType + "_" + actionName;
+
+                            ruleNames.Add(dtPath + actionName);
+                        }
+                    }
+                }
+                else
+                {
+                    ruleNames.Add(element.AuthoringElementPath);
+                }
+            }
+
+            foreach (FieldDef field in entity.Fields)
+            {
+                if (field.IsAnEntityDataType)
+                {
+                    EntityDef fieldEntity = entity.GetRuleApp().Entities[field.DataTypeEntityName];
+                    LoadAllRuleIdentifiers(fieldEntity, ruleNames);
+                }
+            }
+        }
+
         private void PromoteRuleApp(string ruleAppName, string label, string destinationCatUrl, string destinationCatUser, string destinationCatPass)
         {
             var sourceRuleApp = new CatalogRuleApplicationReference(_catalog.Url, ruleAppName, _catalog.Username, _catalog.Password, label);
@@ -1273,6 +1404,21 @@ namespace IntegrationTrainingSamples
             var destCatCon = new RuleCatalogConnection(new Uri(destinationCatUrl), TimeSpan.FromSeconds(60), destinationCatUser, destinationCatPass, RuleCatalogAuthenticationType.BuiltIn);
             var newRuleAppDef = destCatCon.PromoteRuleApplication(sourceRuleAppDef, "Comment");
             destCatCon.ApplyLabel(newRuleAppDef, "LIVE");
+        }
+        private void UpdateReferenceData(RuleApplicationDef ruleAppDef)
+        {
+            var valueList = ((InlineValueListDef)ruleAppDef.DataElements["MyInlineValueList"]);
+            valueList.Items.Add(new ValueListItemDef("NewValue", "NewDisplayText"));
+
+            var inlineTableData = ruleAppDef.DataElements["MyInlineTable"];
+            var inlineTable = ((TableDef)inlineTableData).TableSettings.InlineDataTable;
+            var newRow = inlineTable.NewRow();
+            var values = newRow.ItemArray;
+            values[0] = "NewValue";
+            values[1] = 4;
+            values[2] = true;
+            newRow.ItemArray = values;
+            inlineTable.Rows.Add(newRow);
         }
 
         public void RetrieveIrJSFromDistributionService()
@@ -1366,7 +1512,7 @@ namespace IntegrationTrainingSamples
             var ruleApplication = new RuleApplicationDef("InterestRateApp");
 
             // Define 'CalculateLoanPayment' decision
-            var calculateLoanPayment = ruleApplication.Decisions.Add(new DecisionDef("CalculateLoanPayment"));
+            var calculateLoanPayment = ruleApplication.Decisions.Add(new InRule.Repository.Decisions.DecisionDef("CalculateLoanPayment"));
             {
                 var presentValue = calculateLoanPayment.Fields.Add(new DecisionFieldDef("PresentValue", DecisionFieldType.Input, DataType.Number));
                 var interestRate = calculateLoanPayment.Fields.Add(new DecisionFieldDef("InterestRate", DecisionFieldType.Input, DataType.Number));
@@ -1376,7 +1522,7 @@ namespace IntegrationTrainingSamples
             }
 
             // Define 'CalculateFutureValue' decision
-            var calculateFutureValue = ruleApplication.Decisions.Add(new DecisionDef("CalculateFutureValue"));
+            var calculateFutureValue = ruleApplication.Decisions.Add(new InRule.Repository.Decisions.DecisionDef("CalculateFutureValue"));
             {
                 var presentValue = calculateFutureValue.Fields.Add(new DecisionFieldDef("PresentValue", DecisionFieldType.Input, DataType.Number));
                 var interestRate = calculateFutureValue.Fields.Add(new DecisionFieldDef("InterestRate", DecisionFieldType.Input, DataType.Number));
