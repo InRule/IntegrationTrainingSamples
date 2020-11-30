@@ -712,7 +712,6 @@ namespace IntegrationTrainingSamples
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
 
             //var entityRuleSetDictionary = ruleAppDef.Entities.ToList<EntityDef>().ToDictionary(k => k.Name, v => v.GetAllRuleSets().Select(rs => rs.Name).ToList());
-
             foreach (EntityDef entity in ruleAppDef.Entities)
             {
                 Console.WriteLine($"");
@@ -772,6 +771,10 @@ namespace IntegrationTrainingSamples
                         //rod.UriPrototype = ""/latest?base=USD"";
                     }
                 }
+            }
+
+            if (ruleAppDef.EndPoints != null && ruleAppDef.EndPoints.Count > 0)
+            {
                 foreach (EndPointDef dataElement in ruleAppDef.EndPoints)
                 {
                     if (dataElement is RestServiceDef red)
@@ -1142,6 +1145,21 @@ namespace IntegrationTrainingSamples
 
             return ruleApp;
         }
+        private void UpdateReferenceData(RuleApplicationDef ruleAppDef)
+        {
+            var valueList = ((InlineValueListDef)ruleAppDef.DataElements["MyInlineValueList"]);
+            valueList.Items.Add(new ValueListItemDef("NewValue", "NewDisplayText"));
+
+            var inlineTableData = ruleAppDef.DataElements["MyInlineTable"];
+            var inlineTable = ((TableDef)inlineTableData).TableSettings.InlineDataTable;
+            var newRow = inlineTable.NewRow();
+            var values = newRow.ItemArray;
+            values[0] = "NewValue";
+            values[1] = 4;
+            values[2] = true;
+            newRow.ItemArray = values;
+            inlineTable.Rows.Add(newRow);
+        }
 
         public void CreateAndRunTestSuite(string ruleAppFilePath, string pathToSaveTestSuite, string rootEntityName, string initialJson, string finalJson)
         {
@@ -1404,21 +1422,6 @@ namespace IntegrationTrainingSamples
             var destCatCon = new RuleCatalogConnection(new Uri(destinationCatUrl), TimeSpan.FromSeconds(60), destinationCatUser, destinationCatPass, RuleCatalogAuthenticationType.BuiltIn);
             var newRuleAppDef = destCatCon.PromoteRuleApplication(sourceRuleAppDef, "Comment");
             destCatCon.ApplyLabel(newRuleAppDef, "LIVE");
-        }
-        private void UpdateReferenceData(RuleApplicationDef ruleAppDef)
-        {
-            var valueList = ((InlineValueListDef)ruleAppDef.DataElements["MyInlineValueList"]);
-            valueList.Items.Add(new ValueListItemDef("NewValue", "NewDisplayText"));
-
-            var inlineTableData = ruleAppDef.DataElements["MyInlineTable"];
-            var inlineTable = ((TableDef)inlineTableData).TableSettings.InlineDataTable;
-            var newRow = inlineTable.NewRow();
-            var values = newRow.ItemArray;
-            values[0] = "NewValue";
-            values[1] = 4;
-            values[2] = true;
-            newRow.ItemArray = values;
-            inlineTable.Rows.Add(newRow);
         }
 
         public void RetrieveIrJSFromDistributionService()

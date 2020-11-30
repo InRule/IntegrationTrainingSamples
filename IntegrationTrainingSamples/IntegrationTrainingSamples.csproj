@@ -219,8 +219,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Functions\RetrieveCatalogInfoFunction.cs" />
     <Compile Include="Helpers\AuthoringInCodeExtensions.cs" />
     <Compile Include="Helpers\ConsoleMetricLogger.cs" />
+    <Compile Include="Functions\RexLoadTestFunction.cs" />
     <Compile Include="Helpers\ServiceHelpers.cs" />
     <Compile Include="Helpers\IService.cs" />
     <Compile Include="Helpers\TokenAuthManager.cs" />
