@@ -931,6 +931,48 @@ namespace IntegrationTrainingSamples
                 }
             }
         }
+
+        private void GetRuleAppEntityStructure(string ruleAppFilePath)
+        {
+            var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
+
+            var def = ruleApp.GetRuleApplicationDef();
+            var entities = new List<entityBasicInfo>();
+            foreach (EntityDef entity in def.Entities)
+            {
+                var ent = new entityBasicInfo()
+                {
+                    name = entity.Name,
+                    fields = new List<fieldBasicInfo>()
+                };
+                foreach (FieldDef field in entity.Fields)
+                {
+                    ent.fields.Add(new fieldBasicInfo()
+                    {
+                        name = field.Name,
+                        isTemporary = field.StateLocation == StateLocation.TemporaryState,
+                        isCollection = field.IsCollection,
+                        dataType = field.DataType.ToString(),
+                        entityName = field.DataTypeEntityName
+                    });
+                }
+                entities.Add(ent);
+            }
+            var json = JsonConvert.SerializeObject(entities);
+        }
+        private class entityBasicInfo
+        {
+            public string name;
+            public List<fieldBasicInfo> fields;
+        }
+        private class fieldBasicInfo
+        {
+            public string name;
+            public bool isTemporary;
+            public bool isCollection;
+            public string dataType;
+            public string entityName;
+        }
         #endregion
 
         #region Catalog Interaction Demos
@@ -1506,6 +1548,21 @@ namespace IntegrationTrainingSamples
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
+        }
+
+        private void GenerateRuleAppReport(string ruleAppFilePath)
+        {
+            var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
+            var ruleAppDef = ruleApp.GetRuleApplicationDef();
+
+            var templateEngine = new TemplateEngine();
+            templateEngine.LoadRuleApplicationAndEnabledStandardTemplates(ruleAppDef);
+
+            var reportInfo = InRule.Authoring.Reporting.RuleAppReport.RunRuleAppReport(ruleAppDef, templateEngine);
+            var pathToReport = ((FileInfo)reportInfo).FullName;
+
+            // Perform whatever logic is required using the report htm file
+            Console.WriteLine(pathToReport);
         }
         #endregion
 

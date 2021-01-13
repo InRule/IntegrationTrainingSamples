@@ -41,8 +41,7 @@ namespace IntegrationTrainingSamples.Functions
             Dictionary<string, int> _resultStatusCodes = new Dictionary<string, int>();
 
             // Individual test logic
-            Func<Task<string>> anonFunction = async () =>
-            {
+            Func<Task<string>> anonFunction = async () => {
                 var requestStartTime = DateTime.Now;
                 using (HttpClient client = new HttpClient())
                 {
@@ -53,8 +52,8 @@ namespace IntegrationTrainingSamples.Functions
                     StringContent stringContent = new StringContent(content, Encoding.UTF8, "application/json");
                     var result = await client.PostAsync(config.ExecutionServiceUrl, stringContent);
 
-                //log.LogInformation(result.Content.ReadAsStringAsync().Result);
-                var statusCode = result.StatusCode.ToString();
+                    //log.LogInformation(result.Content.ReadAsStringAsync().Result);
+                    var statusCode = result.StatusCode.ToString();
                     if (_resultStatusCodes.ContainsKey(statusCode))
                         _resultStatusCodes[statusCode]++;
                     else
@@ -102,7 +101,7 @@ namespace IntegrationTrainingSamples.Functions
 
             // Return test summary info
             var totalExecutionTime = (DateTime.Now - startTime).TotalMilliseconds;
-            var overallSummary = $"Completed {config.TotalExecutionCount} requests with {config.ThreadCount} threads in {Math.Round(totalExecutionTime, 0)}ms\n";
+            var overallSummary = $"Completed {config.TotalExecutionCount} requests with {config.ThreadCount} threads in {Math.Round(totalExecutionTime, 0)}ms, which is {Math.Round((config.TotalExecutionCount / (totalExecutionTime / 1000.0)), 2)} requests/second. \n";
             var responseCodeSummary = "Response Codes Received: " + string.Join(", ", _resultStatusCodes.Select(r => r.Key + ":" + r.Value)) + "\n";
             var statisticSummary = $"Individual Response Time (ms) Avg:{Math.Round(_executionTimes.Average(), 0)}, Max:{Math.Round(_executionTimes.Max(), 0)}, Min:{Math.Round(_executionTimes.Min(), 0)}";
             return (ActionResult)new OkObjectResult(overallSummary + responseCodeSummary + statisticSummary);
