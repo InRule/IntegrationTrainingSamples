@@ -8,11 +8,14 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>IntegrationTrainingSamples</RootNamespace>
     <AssemblyName>IntegrationTrainingSamples</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,138 +38,152 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ActiproSoftware.Docking.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Docking.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Docking.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Editors.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Editors.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Editors.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Navigation.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Navigation.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Navigation.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.PropertyGrid.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.PropertyGrid.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.PropertyGrid.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Ribbon.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Ribbon.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Ribbon.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Shared.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Shared.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Shared.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.SyntaxEditor.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.SyntaxEditor.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.SyntaxEditor.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Text.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Text.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Text.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Themes.Metro.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Themes.Metro.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Themes.Metro.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Themes.Office.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Themes.Office.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Themes.Office.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="ActiproSoftware.Wizard.Wpf, Version=13.2.592.0, Culture=neutral, PublicKeyToken=36ff2196ab5654b9, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\ActiproSoftware.Wizard.Wpf.dll</HintPath>
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\ActiproSoftware.Wizard.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="IdentityModel, Version=4.2.0.0, Culture=neutral, PublicKeyToken=e7877f4675df049f, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityModel.4.2.0\lib\net461\IdentityModel.dll</HintPath>
+    <Reference Include="IdentityModel, Version=4.1.0.0, Culture=neutral, PublicKeyToken=e7877f4675df049f, processorArchitecture=MSIL">
+      <HintPath>..\packages\IdentityModel.4.1.0\lib\net472\IdentityModel.dll</HintPath>
     </Reference>
-    <Reference Include="IdentityModel.OidcClient, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5580d04c1b6c37c1, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityModel.OidcClient.4.0.0-preview.1.3\lib\netstandard2.0\IdentityModel.OidcClient.dll</HintPath>
+    <Reference Include="IdentityModel.OidcClient, Version=3.0.0.0, Culture=neutral, PublicKeyToken=5580d04c1b6c37c1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IdentityModel.OidcClient.3.1.2\lib\net472\IdentityModel.OidcClient.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Authoring, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.Core.5.5.1\lib\net461\InRule.Authoring.dll</HintPath>
+    <Reference Include="InRule.Authoring, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Authoring.Core.5.7.1\lib\net472\InRule.Authoring.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Authoring.Authentication, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.Authentication.5.5.1\lib\net461\InRule.Authoring.Authentication.dll</HintPath>
+    <Reference Include="InRule.Authoring.Authentication, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Authoring.Authentication.5.7.1\lib\net472\InRule.Authoring.Authentication.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Authoring.Editors, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.Core.5.5.1\lib\net461\InRule.Authoring.Editors.dll</HintPath>
+    <Reference Include="InRule.Authoring.Editors, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Authoring.Core.5.7.1\lib\net472\InRule.Authoring.Editors.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Authoring.Windows, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.Core.5.5.1\lib\net461\InRule.Authoring.Windows.dll</HintPath>
+    <Reference Include="InRule.Authoring.Windows, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Authoring.Core.5.7.1\lib\net472\InRule.Authoring.Windows.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Common, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Common.5.5.1\lib\net461\InRule.Common.dll</HintPath>
+    <Reference Include="InRule.Common, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Common.5.7.1\lib\net472\InRule.Common.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Repository, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Repository.5.5.1\lib\net461\InRule.Repository.dll</HintPath>
+    <Reference Include="InRule.Repository, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Repository.5.7.1\lib\net472\InRule.Repository.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Repository.XmlSerializers, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Repository.5.5.1\lib\net461\InRule.Repository.XmlSerializers.dll</HintPath>
+    <Reference Include="InRule.Repository.XmlSerializers, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Repository.5.7.1\lib\net472\InRule.Repository.XmlSerializers.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Runtime, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Runtime.5.5.1\lib\net461\InRule.Runtime.dll</HintPath>
+    <Reference Include="InRule.Runtime, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Runtime.5.7.1\lib\net472\InRule.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="InRule.Runtime.Testing, Version=5.5.1.225, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
-      <HintPath>..\packages\InRule.Authoring.SDK.5.5.1\lib\net461\InRule.Runtime.Testing.dll</HintPath>
+    <Reference Include="InRule.Runtime.Testing, Version=5.7.1.236, Culture=neutral, PublicKeyToken=1feb8dd25b1ceb6b, processorArchitecture=MSIL">
+      <HintPath>..\packages\InRule.Authoring.SDK.5.7.1\lib\net472\InRule.Runtime.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Configuration, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Configuration.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.5.0.0\lib\net461\Microsoft.Extensions.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.5.0.0\lib\net461\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.3.1.3\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.1, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.5.0.1\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.3\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Logging, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Logging.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Logging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.5.0.0\lib\net461\Microsoft.Extensions.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Options, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Options.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Options, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.5.0.0\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Primitives.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.1, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.5.0.1\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.2.7\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.2.9\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.6.5.0\lib\net461\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.10.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.6.10.2\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.5.0\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.10.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.10.2\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.5.0\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.10.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.10.2\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+      <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Data.SQLite, Version=1.0.113.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.5.0.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.5.0\lib\net461\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.10.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.10.2\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net" />
     <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
       <Private>True</Private>
@@ -179,10 +196,17 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.6.0-preview5.19224.8\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.1\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
       <Private>True</Private>
@@ -205,18 +229,28 @@
     </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
-    <Reference Include="System.Text.Encodings.Web, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encodings.Web.4.7.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.5.0.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.5.0.2\lib\net461\System.Text.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.0-preview.18571.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Functions\RetrieveCatalogInfoFunction.cs" />
@@ -248,4 +282,11 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+  </Target>
 </Project>
