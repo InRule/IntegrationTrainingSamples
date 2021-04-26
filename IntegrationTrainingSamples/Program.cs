@@ -35,6 +35,7 @@ using System.Text.RegularExpressions;
 using InRule.Repository.DecisionTables;
 using InRule.Repository.ValueLists;
 using System.Data;
+using InRule.Repository.UDFs;
 
 namespace IntegrationTrainingSamples
 {
@@ -46,14 +47,9 @@ namespace IntegrationTrainingSamples
         private IrCatalogConnectionSettings _catalog = null;
         private WebServiceHost _host;
 
-        static void Main(string[] args)
+        
+        private void RunRequestedFunction()
         {
-            log4net.Config.XmlConfigurator.Configure();
-            //_logger.Debug("Testing log4net");
-
-            var program = new Program();
-            program.Start();
-
             while (true)
             {
                 Console.WriteLine();
@@ -85,64 +81,64 @@ namespace IntegrationTrainingSamples
                 switch (requestType)
                 {
                     case "1":
-                        program.ColdStartDemo();
+                        ColdStartDemo();
                         break;
                     case "1.1":
-                        program.LimitCacheSize();
+                        LimitCacheSize();
                         break;
                     case "1.2":
-                        program.ResetCache();
+                        ResetCache();
                         break;
                     case "1.3":
-                        program.PreCompile();
+                        PreCompile();
                         break;
                     case "1.4":
-                        program.TestMemoryConsumption(3);
+                        TestMemoryConsumption(3);
                         break;
                     case "2":
-                        program.ListRuleApps();
+                        ListRuleApps();
                         break;
                     case "2.1":
-                        program.ListRuleSetDetails("MortgageCalculator");
+                        ListRuleSetDetails("MortgageCalculator");
                         break;
                     case "2.2":
-                        program.LogBusinessLanguageText(@"..\..\..\RuleApps\MortgageCalculator with REST Lookup.ruleappx");
+                        LogBusinessLanguageText(@"..\..\..\RuleApps\MortgageCalculator with REST Lookup.ruleappx");
                         break;
                     case "3":
-                        program.CheckOutRuleApp();
+                        CheckOutRuleApp();
                         break;
                     case "3.1":
-                        program.UndoCheckout();
+                        UndoCheckout();
                         break;
                     case "3.2":
-                        foreach (var result in program.SearchCatalogForDescription(SearchField.Name, "Set"))
+                        foreach (var result in SearchCatalogForDescription(SearchField.Name, "Set"))
                             Console.WriteLine(result);
                         break;
                     case "4":
-                        program.BuildAndRunInMemoryRuleApp();
+                        BuildAndRunInMemoryRuleApp();
                         break;
                     case "5":
-                        program.RunTestSuite(@"..\..\..\RuleApps\MultiplicationApp.ruleappx",
+                        RunTestSuite(@"..\..\..\RuleApps\MultiplicationApp.ruleappx",
                                                          @"..\..\..\RuleApps\MultiplicationApp Test Suite.testsuite");
                         break;
                     case "5.1":
-                        program.CreateAndRunTestSuite(@"..\..\..\RuleApps\MultiplicationApp.ruleappx", @"C:\Users\DanGardiner\Documents\test.testsuite", 
+                        CreateAndRunTestSuite(@"..\..\..\RuleApps\MultiplicationApp.ruleappx", @"C:\Users\DanGardiner\Documents\test.testsuite",
                                                         "MultiplicationProblem", "{ FactorA:5, FactorB:6 }", "{ FactorA:5, FactorB:6, Result:30 }");
                         break;
                     case "5.2":
-                        var asyncResult = program.RunRuleRequestLoadTest().Result;
+                        var asyncResult = RunRuleRequestLoadTest().Result;
                         break;
                     case "6":
-                        program.RetrieveIrJSFromDistributionService();
+                        RetrieveIrJSFromDistributionService();
                         break;
                     case "7":
-                        program.ExecuteWithMetricsLogged();
+                        ExecuteWithMetricsLogged();
                         break;
                     case "8":
-                        var er = program.ExecuteDecision("MortgageSummary", "{ \"Principal\": 100000, \"APR\": 0.9, \"TermInYears\": 30 }").Result;
+                        var er = ExecuteDecision("MortgageSummary", "{ \"Principal\": 100000, \"APR\": 0.9, \"TermInYears\": 30 }").Result;
                         break;
                     case "8.1":
-                        var br = program.BuildAndPublishDecision().Result;
+                        var br = BuildAndPublishDecision().Result;
                         break;
                     case "9":
                         var ar = RexClient.Apply("MultiplicationApp", "MultiplicationProblem", new MultiplicationProblem() { FactorA = 4, FactorB = 32 }).Result;
@@ -155,8 +151,6 @@ namespace IntegrationTrainingSamples
                 if (exit)
                     break;
             }
-
-            program.Stop();
         }
         public void Start()
         {
@@ -534,6 +528,19 @@ namespace IntegrationTrainingSamples
         #endregion
         #endregion
 
+        static void Main(string[] args)
+        {
+
+
+            log4net.Config.XmlConfigurator.Configure();
+            var program = new Program();
+            program.Start();
+
+            program.RunRequestedFunction();
+
+            program.Stop();
+        }
+
         #region Cold Start and Rule App Caching Demos
         private void ColdStartDemo()
         {
@@ -580,15 +587,16 @@ namespace IntegrationTrainingSamples
         }
         private void PreCompile()
         {
+            // Specifying CompileSettings forces a Function compile in addition to RuleApp base compilation
             Console.WriteLine("Compiling MultiplicationApp...");
             var ruleAppRef = GetCatalogRuleApp("MultiplicationApp");
-            ruleAppRef.Compile(CacheRetention.AlwaysRetain);
+            ruleAppRef.Compile(CacheRetention.AlwaysRetain, CompileSettings.Default);
             Console.WriteLine("Compiling MortgageCalculator...");
             var ruleAppRef1 = GetCatalogRuleApp("MortgageCalculator");
-            ruleAppRef1.Compile(CacheRetention.FromWeight(1000));
+            ruleAppRef1.Compile(CacheRetention.FromWeight(1000), CompileSettings.Default);
             Console.WriteLine("Compiling InvoiceSample...");
             var ruleAppRef2 = GetCatalogRuleApp("InvoiceSample", null);
-            ruleAppRef2.Compile();
+            ruleAppRef2.Compile(CompileSettings.Default);
         }
 
         private List<RuleAppCacheComplilationStatistics> TestMemoryConsumption(int pastRevisionsToLoadPerRuleApp)
@@ -696,11 +704,16 @@ namespace IntegrationTrainingSamples
             Console.WriteLine("Rule Apps contained in the catalog located at " + _catalog.Url);
 
             var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
-            foreach (var ruleApp in catCon.GetAllRuleApps())
+            /*foreach (var ruleApp in catCon.GetAllRuleApps())
             {
                 var ruleAppDefInfo = ruleApp.Key;
                 var ruleAppInfo = ruleApp.Value;
                 Console.WriteLine($"Rule App {ruleAppDefInfo.Name} v{ruleAppDefInfo.PublicRevision} {(ruleAppDefInfo.IsLatest ? ruleAppInfo.LastLabelName : "") }");
+            }*/
+            foreach (var ruleApp in catCon.GetRuleAppSummary(false))
+            {
+                Console.WriteLine("AppRev:" + ruleApp.LastLabelAppRevision + " PublicRev:" + ruleApp.LastLabelDefPublicRevision);
+                Console.WriteLine($"Rule App {ruleApp.Name} v{ruleApp.Revisions} {ruleApp.LastLabelName}");
             }
         }
 
@@ -801,7 +814,7 @@ namespace IntegrationTrainingSamples
 
             _templateEngine = new TemplateEngine();
             _templateEngine.LoadRuleApplicationAndEnabledStandardTemplates(ruleAppDef);
-            
+
             foreach (EntityDef entity in ruleAppDef.Entities)
             {
                 Console.WriteLine($"");
@@ -932,24 +945,24 @@ namespace IntegrationTrainingSamples
             }
         }
 
-        private void GetRuleAppEntityStructure(string ruleAppFilePath)
+        private string GetRuleAppEntityStructureJson(RuleApplicationDef def)
         {
-            var ruleApp = new FileSystemRuleApplicationReference(ruleAppFilePath);
-
-            var def = ruleApp.GetRuleApplicationDef();
             var entities = new List<entityBasicInfo>();
             foreach (EntityDef entity in def.Entities)
             {
                 var ent = new entityBasicInfo()
                 {
                     name = entity.Name,
-                    fields = new List<fieldBasicInfo>()
+                    guid = entity.Guid,
+                    fields = new List<fieldBasicInfo>(),
+                    ruleSets = entity.GetRuleSets().Where(rs => rs.FireMode == RuleSetFireMode.Explicit).Select(rs => rs.Name).ToList() //Explicit rulesets that could be executed
                 };
                 foreach (FieldDef field in entity.Fields)
                 {
                     ent.fields.Add(new fieldBasicInfo()
                     {
                         name = field.Name,
+                        guid = field.Guid,
                         isTemporary = field.StateLocation == StateLocation.TemporaryState,
                         isCollection = field.IsCollection,
                         dataType = field.DataType.ToString(),
@@ -958,20 +971,55 @@ namespace IntegrationTrainingSamples
                 }
                 entities.Add(ent);
             }
+
+            //If this Rule App is bound to Salesforce, inject the Salesforce entity and field mapping data
+            foreach(var endpoint in def.EndPoints)
+            {
+                if(endpoint is InRule.Repository.Extensions.Salesforce.EndPoints.SalesforceSchemaDef sfData)
+                {
+                    foreach(var sfEntity in sfData.SalesforceObjects)
+                    {
+                        var irEntity = entities.FirstOrDefault(e => e.guid == sfEntity.InRuleEntityGuid);
+                        if(irEntity != null)
+                        {
+                            irEntity.sfName = sfEntity.SingularLabel;
+                            foreach(var sfField in sfEntity.Fields)
+                            {
+                                var irField = irEntity.fields.FirstOrDefault(f => f.guid == sfField.InRuleFieldGuid);
+                                if(irField != null)
+                                {
+                                    irField.sfMetadata = sfField;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             var json = JsonConvert.SerializeObject(entities);
+            return json;
         }
         private class entityBasicInfo
         {
+            [JsonIgnore]
+            public Guid guid { get; set; }
+
             public string name;
             public List<fieldBasicInfo> fields;
+            public List<string> ruleSets; //Future, include Paramter info?
+            public string sfName;
         }
         private class fieldBasicInfo
         {
+            [JsonIgnore]
+            public Guid guid { get; set; }
+
             public string name;
             public bool isTemporary;
             public bool isCollection;
             public string dataType;
             public string entityName;
+            public dynamic sfMetadata;
         }
         #endregion
 
@@ -1119,6 +1167,35 @@ namespace IntegrationTrainingSamples
             Description,
             Name,
             Note
+        }
+
+        public UserDetails[] GetCatalogUsers()
+        {
+            try
+            {
+                //System.Net.WebRequest.DefaultWebProxy = new System.Net.WebProxy("proxy.domain.com:8080");
+                var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromSeconds(60), _catalog.Username, _catalog.Password, RuleCatalogAuthenticationType.BuiltIn);
+
+                var userDetails = catCon.GetUsers(false).Select(user => new UserDetails()
+                {
+                    Name = user.Name,
+                    EmailAddress = user.EmailAddress,
+                    IsActive = user.IsActive,
+                    Roles = catCon.GetRolesForUser(user).Select(r => r.Name).ToArray()
+                }).ToArray();
+                return userDetails;
+            }
+            catch (Exception ex)
+            {
+                return new UserDetails[] { new UserDetails() { Name = "Error connecting to Catalog: " + ex.Message } };
+            }
+        }
+        public class UserDetails
+        {
+            public string Name;
+            public string EmailAddress;
+            public bool IsActive;
+            public string[] Roles;
         }
         #endregion
 
@@ -1471,8 +1548,10 @@ namespace IntegrationTrainingSamples
             Console.WriteLine();
             Console.WriteLine("Requesting compiled JS library from Distribution Service...");
             var ruleApp = new CatalogRuleApplicationReference(_catalog.Url, "SalesforceRuleApp", _catalog.Username, _catalog.Password, "LIVE");
+            //var ruleApp = new FileSystemRuleApplicationReference(@"C:\Users\DanGardiner\Desktop\testRuleApp.ruleappx");
             var ruleAppDef = ruleApp.GetRuleApplicationDef();
             var js = CallDistributionServiceAsync(ruleAppDef, "https://api.distribution.inrule.com/", ConfigurationManager.AppSettings["irDistributionKey"]).Result;
+
             Console.WriteLine("Compiled Javascript Rule App:");
             Console.WriteLine(js);
             Console.WriteLine();
@@ -1563,6 +1642,98 @@ namespace IntegrationTrainingSamples
 
             // Perform whatever logic is required using the report htm file
             Console.WriteLine(pathToReport);
+        }
+
+        private void CheckLicense()
+        {
+            try
+            {
+                using (var rs = new RuleSession(new InMemoryRuleApplicationReference(new RuleApplicationDef()))) { }
+                Console.WriteLine("License is valid");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("License is not valid");
+            }
+        }
+
+        private async Task<RuleApplicationReference> GetRuleAppFromCatalogUsingCentralizedAuth()
+        {
+            var settings = new InRule.Authoring.Authentication.OAuth.OAuthSettings();
+            settings.Audience = ConfigurationManager.AppSettings["inrule:authoring:audience"];
+            settings.ClientId = ConfigurationManager.AppSettings["inrule:authoring:clientid"];
+            settings.Authority = ConfigurationManager.AppSettings["inrule:authoring:authority"];
+            settings.RedirectUri = ConfigurationManager.AppSettings["inrule:authoring:redirecturi"];
+            settings.LogoutUrl = ConfigurationManager.AppSettings["inrule:authoring:logouturl"];
+
+            var _oidcClient = new IdentityModel.OidcClient.OidcClient(new IdentityModel.OidcClient.OidcClientOptions
+            {
+                Authority = settings.Authority,
+                ClientId = settings.ClientId,
+                Scope = "openid email profile offline_access",
+                ResponseMode = IdentityModel.OidcClient.OidcClientOptions.AuthorizeResponseMode.Redirect,
+                Flow = IdentityModel.OidcClient.OidcClientOptions.AuthenticationFlow.AuthorizationCode,
+                RedirectUri = settings.RedirectUri,
+                Browser = new InRule.Authoring.Authentication.OAuth.Controls.WinFormsWebView(width: 525, height: 640),
+                LoadProfile = true,
+                FilterClaims = false,
+                Policy =
+                {
+                    RequireAuthorizationCodeHash = false,
+                    RequireAccessTokenHash = false
+                }
+            });
+
+            //Requires IdentityModel v4.1.0.0, and IndentityModel.OidcClient v3.0.0.0; may need to remove app.config redirect for System.Net.Http
+            IdentityModel.OidcClient.LoginResult loginResult;
+            var loginRequest = new IdentityModel.OidcClient.LoginRequest
+            {
+                FrontChannelExtraParameters = { { "audience", settings.Audience } }
+            };
+            try
+            {
+                loginResult = await _oidcClient.LoginAsync(loginRequest);
+            }
+            //Occurs when you close the login window
+            catch (NullReferenceException)
+            {
+                loginResult = new IdentityModel.OidcClient.LoginResult();
+            }
+
+            if (loginResult.IsError)
+            {
+                throw new System.Security.Authentication.AuthenticationException(loginResult.Error);
+            }
+
+            var credentials = new OAuthCredentialInfo
+            {
+                AccessToken = loginResult.AccessToken,
+                AccessTokenExpiration = loginResult.AccessTokenExpiration,
+                AuthenticationTime = loginResult.AuthenticationTime,
+                IdentityToken = loginResult.IdentityToken,
+                RefreshToken = loginResult.RefreshToken,
+                DisplayName = loginResult.User.FindFirst("nickname").Value,
+                EmailAddress = loginResult.User.FindFirst("email").Value
+            };
+
+            //var catCon = new RuleCatalogConnection(new Uri(_catalog.Url), TimeSpan.FromMilliseconds(15000), credentials.Username, credentials.Password, RuleCatalogAuthenticationType.CentralizedAuthentication);
+            var ruleApp = new CatalogRuleApplicationReference(_catalog.Url, "MultiplicationApp", credentials.Username, credentials.Password);
+            ruleApp.Compile(); // Ensures that the RA is properly available
+            return ruleApp;
+        }
+        class OAuthCredentialInfo
+        {
+            public string AccessToken;
+            public string IdentityToken;
+            public string RefreshToken;
+            public DateTime AccessTokenExpiration;
+            public DateTime? AuthenticationTime;
+            public string DisplayName;
+            public string EmailAddress;
+
+            public string Username { get { return EmailAddress; } }
+            public string Password { get { return $"Bearer {AccessToken}"; } }
+
         }
         #endregion
 
@@ -1713,6 +1884,7 @@ namespace IntegrationTrainingSamples
                     #endregion
 
                     Entity entity = session.CreateEntity("MultiplicationProblem", initialEntityState);
+                    //Entity entity = session.CreateEntity("MultiplicationProblem", "{'FactorA':5,'FactorB':6}", EntityStateType.Json);
 
                     session.ApplyRules();
 
